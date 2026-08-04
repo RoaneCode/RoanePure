@@ -41,7 +41,8 @@
     { id: 'groups',   name: 'Skill groups' },
     { id: 'text',     name: 'Paragraphs of text' },
     { id: 'gallery',  name: 'Photo gallery' },
-    { id: 'files',    name: 'Files to download' }
+    { id: 'files',    name: 'Files to download' },
+    { id: 'tools',    name: 'Tools & logos (side rail)' }
   ];
 
   // Uploads are restricted to formats that cannot carry executable code.
@@ -638,7 +639,8 @@
     section: 'Add section', timeline: 'Add entry', card: 'Add project',
     group: 'Add skill group', bullet: 'Add bullet point', tag: 'Add tag',
     skill: 'Add skill', paragraph: 'Add paragraph', link: 'Add link',
-    photo: 'Add photo', file: 'Add file', attachment: 'Attach a file'
+    photo: 'Add photo', file: 'Add file', attachment: 'Attach a file',
+    tool: 'Add tool'
   };
 
   function blankItem(kind) {
@@ -672,6 +674,11 @@
           node.appendChild(itemControls(listPath, kind, index, items.length));
         }
       });
+
+      // Sections are added from the toolbar. The list container for sections
+      // is .page itself, so an inline button here would land outside the
+      // page rather than at the end of the content.
+      if (kind === 'section') return;
 
       var addBtn = el('button', { class: INLINE_KINDS[kind] ? 'ed-chip' : 'ed-add', type: 'button' },
         '+ ' + (ADD_LABEL[kind] || 'Add item'));
@@ -719,7 +726,7 @@
       wrap.appendChild(down);
     }
 
-    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline') {
+    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline' || kind === 'tool') {
       var cog = el('button', { class: 'ed-chip', type: 'button' }, '⚙ Details');
       cog.addEventListener('click', function () { openDetails(listPath + '.' + index, kind); });
       wrap.appendChild(cog);
@@ -753,7 +760,94 @@
     return list;
   }
 
+  /* ---------------------------------------------------------- tool picker */
+
+  // Pick a logo from the built-in set, or upload your own. Content only ever
+  // stores the slug — never the artwork — so the drawing always comes from
+  // vetted local code.
+  function openToolPicker(listPath) {
+    var icons = window.ToolIcons || {};
+    var slugs = Object.keys(icons);
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Add a tool'));
+      box.appendChild(el('p', {}, 'Pick a logo, or upload your own image for anything not listed.'));
+
+      var search = field(box, 'Search', '', { placeholder: 'e.g. slack' });
+
+      var grid = el('div', { class: 'ed-toolgrid' });
+      box.appendChild(grid);
+
+      function paint(filter) {
+        grid.textContent = '';
+        var q = filter.trim().toLowerCase();
+        var shown = slugs.filter(function (s) {
+          return !q || icons[s].title.toLowerCase().indexOf(q) > -1 || s.indexOf(q) > -1;
+        });
+        if (!shown.length) {
+          grid.appendChild(el('p', {}, 'No logo matches that. Use "Upload my own logo" below.'));
+          return;
+        }
+        shown.forEach(function (slug) {
+          var ic = icons[slug];
+          var b = el('button', { class: 'ed-toolopt', type: 'button', title: ic.title });
+          var art = el('span', { class: 'ed-toolopt__art' });
+          art.style.color = ic.hex;
+          art.appendChild(P.svgIcon(ic, ic.title));
+          b.appendChild(art);
+          b.appendChild(el('span', { class: 'ed-toolopt__name' }, ic.title));
+          b.addEventListener('click', function () {
+            listAt(listPath).push({ name: ic.title, icon: slug, logo: '', color: '', url: '' });
+            markDirty();
+            close();
+            P.render();
+          });
+          grid.appendChild(b);
+        });
+      }
+
+      search.addEventListener('input', function () { paint(search.value); });
+      paint('');
+
+      actions(box, [
+        {
+          label: 'Upload my own logo', onClick: function () {
+            close();
+            uploadToolLogo(listPath);
+          }
+        },
+        {
+          label: 'Add without a logo', onClick: function () {
+            listAt(listPath).push({ name: 'New tool', icon: '', logo: '', color: '', url: '' });
+            markDirty();
+            close();
+            P.render();
+          }
+        },
+        { label: 'Cancel', onClick: close }
+      ]);
+    });
+  }
+
+  function uploadToolLogo(listPath, itemIndex) {
+    if (!Ed.ready) { toast('Unlock editing first — uploads are saved straight to GitHub.', 'bad'); openUnlock(); return; }
+    fileInput('image/png,image/jpeg,image/webp,image/gif', false, function (files) {
+      runUploads(files, 256, function (results) {
+        if (!results.length) return;
+        var list = listAt(listPath);
+        if (itemIndex === undefined) {
+          list.push({ name: results[0].original || 'New tool', icon: '', logo: results[0].path, color: '', url: '' });
+        } else {
+          list[itemIndex].logo = results[0].path;
+        }
+        markDirty();
+        P.render();
+      });
+    });
+  }
+
   function addItem(listPath, kind) {
+    if (kind === 'tool') { openToolPicker(listPath); return; }
     if (UPLOAD_KINDS[kind]) { openUpload(listPath, kind); return; }
     listAt(listPath).push(blankItem(kind));
     markDirty();
@@ -867,8 +961,24 @@
     attachment: [
       { key: 'label', label: 'File name shown on the page' },
       { key: 'description', label: 'Short description' }
+    ],
+    tool: [
+      { key: 'name', label: 'Tool name' },
+      { key: 'icon', label: 'Logo', type: 'select', options: [] },   // filled below
+      { key: 'url', label: 'Link (optional)', placeholder: 'https://…' },
+      { key: 'color', label: 'Hover colour (optional)', placeholder: '#FF4F00' }
     ]
   };
+
+  // The logo dropdown is built from whatever icons.js actually ships.
+  function toolIconOptions() {
+    var icons = window.ToolIcons || {};
+    var list = [{ id: '', name: '— letters only —' }];
+    Object.keys(icons)
+      .sort(function (a, b) { return icons[a].title.localeCompare(icons[b].title); })
+      .forEach(function (s) { list.push({ id: s, name: icons[s].title }); });
+    return list;
+  }
 
   // Page-wide settings that aren't visible anywhere on the page itself:
   // the browser tab title and the blurb search engines and chat apps show.
@@ -914,6 +1024,12 @@
     if (!fields) return;
     var item = getPath(P.state.content, itemPath) || {};
 
+    if (kind === 'tool') {
+      fields = fields.map(function (f) {
+        return f.key === 'icon' ? { key: 'icon', label: 'Logo', type: 'select', options: toolIconOptions() } : f;
+      });
+    }
+
     panel(function (box, close) {
       box.appendChild(el('h2', {}, 'Details'));
       var inputs = {};
@@ -946,6 +1062,23 @@
             markDirty(); close(); P.render();
           }
         });
+      }
+
+      if (kind === 'tool') {
+        var listPath = itemPath.replace(/\.(\d+)$/, '');
+        var idx = parseInt(itemPath.match(/\.(\d+)$/)[1], 10);
+        buttons.splice(1, 0, {
+          label: item.logo ? 'Replace uploaded logo' : 'Upload a logo image',
+          onClick: function () { close(); uploadToolLogo(listPath, idx); }
+        });
+        if (item.logo) {
+          buttons.splice(2, 0, {
+            label: 'Remove uploaded logo', onClick: function () {
+              item.logo = '';
+              markDirty(); close(); P.render();
+            }
+          });
+        }
       }
 
       actions(box, buttons);

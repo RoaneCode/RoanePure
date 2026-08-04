@@ -138,6 +138,18 @@ Neither appears anywhere on the page itself.
 - **A document on a job or project** (a case study, a certificate): the **📎 Attach file** button.
 - **A photo gallery or a list of downloads:** use **Add section** and choose *Photo gallery* or *Files to download*.
 
+### The Tools rail (logos)
+
+**Add section → "Tools & logos (side rail)"** creates a panel of tool logos that sits down the right-hand side of your page on a computer, and slots in neatly under your intro on a phone.
+
+Press **+ Add tool** and either pick a logo from the built-in set (search by name), upload your own image, or add it with no logo at all. Anything without a logo gets a two-letter tile in the same style, so it still looks like part of the set rather than a gap.
+
+The logos sit quietly in one colour and bloom into their real brand colour when someone hovers over them. On a phone there is no hover, so they simply stay in the calm version.
+
+Around 30 logos are built in — including Google Sheets, Zapier, Claude, Apps Script, Slack, Dropbox and Synology. Some brands (JotForm, Visual Studio, Dubsado) aren't in the open-source set, so upload their logo or leave the lettermark.
+
+**⚙ Details** on any tool lets you change its name, swap the logo, add a link, or set a custom hover colour.
+
 Photos are automatically shrunk and compressed before uploading, so your site stays fast on a phone. That also strips hidden data from the photo — including the GPS location some phones record.
 
 **Allowed:** images (JPG, PNG, GIF, WebP), PDF, Word, Excel, PowerPoint, text, CSV.

@@ -112,10 +112,33 @@ a:hover { text-decoration: none; }
   max-width: var(--page-max);
   margin: 0 auto;
   padding: 2.5rem 1.25rem 4rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 40em) {
   .page { padding: 4rem 2rem 5rem; }
+}
+
+/* Two columns once there is genuinely room for a rail without squeezing the
+   reading measure. Below this the grid stays single-column and the rail
+   simply falls into place under the intro. */
+@media (min-width: 68em) {
+  .page--has-rail {
+    grid-template-columns: minmax(0, 1fr) 12.5rem;
+    column-gap: 3.5rem;
+    max-width: calc(var(--page-max) + 16rem);   /* keeps each theme's proportions */
+  }
+  .page--has-rail > .masthead,
+  .page--has-rail > .page-footer { grid-column: 1 / -1; }
+  .page--has-rail > main { grid-column: 1; grid-row: 2; }
+  .page--has-rail > .toolrail {
+    grid-column: 2;
+    grid-row: 2;
+    position: sticky;
+    top: 2.5rem;
+    align-self: start;
+  }
 }
 
 /* --- Header / profile --------------------------------------------------- */
@@ -587,6 +610,96 @@ main { counter-reset: section; }
 /* Attachments nested inside an entry or card */
 .attachments { display: grid; gap: .4rem; margin-top: .75rem; }
 .attachments .file { padding: .5rem .7rem; }
+
+/* --- Tools rail --------------------------------------------------------- */
+
+.toolrail { min-width: 0; margin-bottom: 2.5rem; }
+.toolrail .section { margin-bottom: 0; }
+
+/* The rail is a sidebar, not part of the numbered narrative. */
+.toolrail .section__title::before { display: none; }
+
+.tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.25rem, 1fr));
+  gap: .5rem;
+}
+
+@media (min-width: 68em) {
+  .page--has-rail .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: .4rem;
+  padding: .7rem .35rem .55rem;
+  min-height: 5rem;
+  border: 1px solid var(--tool-border, var(--border));
+  border-radius: var(--tool-radius, var(--radius-lg));
+  background: var(--tool-bg, transparent);
+  color: var(--text-muted);
+  text-decoration: none;
+  text-align: center;
+  min-width: 0;
+  transition: color .25s ease, border-color .25s ease,
+              background-color .25s ease, transform .25s cubic-bezier(.2, .7, .3, 1);
+}
+
+.tool__art {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.tool__art svg { width: 100%; height: 100%; display: block; }
+.tool__art img { width: 100%; height: 100%; object-fit: contain; }
+
+/* Lettermark for brands the icon set doesn't carry — same tile, same weight,
+   so it sits in the set rather than looking like a missing image. */
+.tool__mark {
+  font-family: var(--font-meta);
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1;
+  color: currentColor;
+}
+
+.tool__name {
+  font-family: var(--font-meta);
+  font-size: .66rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+/* The bloom. Resting state has to look finished on its own: touchscreens
+   never fire hover, so this is a reward for pointer users, not the point. */
+@media (hover: hover) {
+  .tool:hover {
+    color: var(--brand);
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
+    background: color-mix(in srgb, var(--brand) 7%, transparent);
+  }
+  a.tool:hover { transform: translateY(-2px); }
+  .tool:hover .tool__name { color: var(--brand); }
+}
+
+a.tool:focus-visible { color: var(--brand); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tool { transition: none; }
+  a.tool:hover { transform: none; }
+}
 
 /* --- Scroll reveal ------------------------------------------------------
    Sections fade up as they come into view. The hidden state is applied by

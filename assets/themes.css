@@ -100,6 +100,10 @@
 
   --entry-marker-display: none;     /* accent tick beside each job title   */
   --numerals: normal;               /* oldstyle figures where available    */
+
+  --tool-bg: transparent;           /* tiles in the Tools rail             */
+  --tool-border: var(--border);
+  --tool-radius: var(--radius-lg);
 }
 
 /* --------------------------------------------------------------------------
@@ -213,6 +217,9 @@
   --page-texture:
     linear-gradient(180deg, rgba(28, 75, 82, .045) 0%, rgba(28, 75, 82, 0) 22rem),
     repeating-linear-gradient(0deg, rgba(20, 17, 14, .016) 0 1px, transparent 1px 4px);
+  --tool-bg: var(--bg-raised);
+  --tool-border: var(--border);
+
 }
 
 /* --------------------------------------------------------------------------
@@ -254,6 +261,10 @@
   --tag-bg: #fafafa;
   --tag-radius: 999px;
   --tag-border: 1px solid var(--border);
+  --tool-bg: var(--bg-sunken);
+  --tool-border: transparent;
+  --tool-radius: 10px;
+
 }
 
 /* --------------------------------------------------------------------------
@@ -304,6 +315,10 @@
   --tag-transform: uppercase;
 
   --rule-weight: 3px;
+  --tool-bg: var(--bg-sunken);
+  --tool-border: transparent;
+  --tool-radius: 14px;
+
 }
 
 /* --------------------------------------------------------------------------
@@ -355,4 +370,7 @@
   --tag-text: var(--accent);
   --tag-border: 1px solid rgba(78, 161, 255, .25);
   --tag-radius: 4px;
+  --tool-bg: rgba(255, 255, 255, .028);
+  --tool-border: var(--border);
+
 }

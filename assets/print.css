@@ -131,7 +131,37 @@ html, body {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
+  display: block !important;   /* collapse the two-column rail grid */
 }
+
+/* The Tools rail is decoration and must not take a column of the page.
+   The tools themselves still print — as a plain comma-separated run, which
+   is the form a CV-scanning system can actually read. */
+.toolrail {
+  position: static !important;
+  margin: 0 0 12pt !important;
+}
+.tools { display: block !important; }
+
+.tool {
+  display: inline !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  color: #000 !important;
+  transform: none !important;
+}
+.tool__art { display: none !important; }
+
+.tool__name {
+  font-size: 10pt !important;
+  font-weight: 400 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  color: #000 !important;
+}
+.tool:not(:last-child) .tool__name::after { content: '\00a0·\00a0'; }
 
 .masthead {
   display: block !important;

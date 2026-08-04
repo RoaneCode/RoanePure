@@ -393,6 +393,48 @@ body.ed-on [data-item] {
   color: #7f1d1d;
 }
 
+/* ------------------------------------------------------------ tool picker */
+
+.ed-toolgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: .5rem;
+  max-height: 17rem;
+  overflow-y: auto;
+  padding: .25rem;
+  margin-bottom: .9rem;
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+}
+
+.ed-toolopt {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  min-height: 4.5rem;
+  padding: .6rem .3rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  color: var(--ed-ink);
+  cursor: pointer;
+  text-align: center;
+}
+.ed-toolopt:hover { background: #f3f4f6; border-color: var(--ed-line); }
+
+.ed-toolopt__art { width: 1.6rem; height: 1.6rem; display: grid; place-items: center; }
+.ed-toolopt__art svg { width: 100%; height: 100%; }
+
+.ed-toolopt__name {
+  font-size: .68rem;
+  line-height: 1.2;
+  color: #4b5563;
+  overflow-wrap: anywhere;
+}
+
 /* ---------------------------------------------------------------- toasts */
 
 .editor-toast {

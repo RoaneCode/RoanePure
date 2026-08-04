@@ -499,13 +499,106 @@
     return listOf(wrap, 'sections.' + sIndex + '.items', 'file');
   }
 
+  /* ---------------------------------------------------------------- tools */
+
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+
+  // Build an <svg> from vetted local path data. createElement() would produce
+  // a dead element in the wrong namespace, so createElementNS is required.
+  function svgIcon(icon, label) {
+    var svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', label);
+    svg.setAttribute('focusable', 'false');
+    var path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('fill', 'currentColor');
+    path.setAttribute('d', icon.path);
+    svg.appendChild(path);
+    return svg;
+  }
+
+  // Which colour a tile blooms to on hover. Falls back to the theme accent
+  // when a brand colour would be invisible against the current background —
+  // Synology's official grey on white being the obvious case.
+  function brandColour(item, icon) {
+    var styles = getComputedStyle(document.documentElement);
+    var accent = styles.getPropertyValue('--accent').trim() || '#333';
+    var bg = styles.getPropertyValue('--bg').trim();
+
+    var candidate = has(item.color) ? item.color : (icon ? icon.hex : '');
+    if (!candidate) return accent;
+
+    var ratio = contrastRatio(candidate, bg);
+    if (ratio !== null && ratio < MIN_CONTRAST) return accent;
+    return candidate;
+  }
+
+  // Lettermark for a tool with no logo. Two characters, because a lone
+  // letter reads as sparse beside the icons: "Visual Studio" -> VS,
+  // "JotForm" -> JO.
+  function toolMark(name) {
+    var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+
+  function renderTools(section, sIndex) {
+    var wrap = el('div', { class: 'tools' });
+    var items = Array.isArray(section.items) ? section.items : [];
+
+    items.forEach(function (item, i) {
+      item = item || {};
+      var base = 'sections.' + sIndex + '.items.' + i;
+      var name = has(item.name) ? item.name : 'Tool';
+
+      // Slug is only ever a key lookup — path data never comes from content.
+      var icon = (window.ToolIcons && item.icon) ? window.ToolIcons[item.icon] : null;
+      var url = safeUrl(item.url);
+
+      var tile = el(url ? 'a' : 'div', {
+        class: 'tool',
+        'data-item': base,
+        href: url || null,
+        target: /^https?:/i.test(url) ? '_blank' : null,
+        rel: /^https?:/i.test(url) ? 'noopener noreferrer' : null
+      });
+      tile.style.setProperty('--brand', brandColour(item, icon));
+
+      var art = el('span', { class: 'tool__art' });
+      var logo = safeUrl(item.logo);
+
+      if (logo) {
+        art.appendChild(el('img', {
+          src: logo, alt: name, loading: 'lazy', width: '48', height: '48'
+        }));
+        art.className += ' tool__art--photo';
+      } else if (icon) {
+        art.appendChild(svgIcon(icon, name));
+      } else {
+        // Unknown slug, or a brand the icon set doesn't carry. A lettermark
+        // in the same tile geometry reads as part of the set, not a gap.
+        art.appendChild(el('span', { class: 'tool__mark', 'aria-hidden': 'true' }, toolMark(name)));
+        art.className += ' tool__art--mark';
+      }
+      tile.appendChild(art);
+
+      tile.appendChild(editable(el('span', { class: 'tool__name' }, item.name), base + '.name', 'Tool name'));
+      wrap.appendChild(tile);
+    });
+
+    return listOf(wrap, 'sections.' + sIndex + '.items', 'tool');
+  }
+
   var RENDERERS = {
     timeline: renderTimeline,
     cards: renderCards,
     groups: renderGroups,
     text: renderText,
     gallery: renderGallery,
-    files: renderFiles
+    files: renderFiles,
+    tools: renderTools
   };
 
   function renderSection(section, index) {
@@ -542,13 +635,31 @@
     var page = el('div', { class: 'page' });
     page.appendChild(renderMasthead(content));
 
-    var main = el('main', { id: 'main' });
     var sections = Array.isArray(content.sections) ? content.sections : [];
+    var hasRail = sections.some(function (s) { return s && s.type === 'tools'; });
+
+    // The rail is a grid child of .page, and must sit before <main> in the
+    // DOM: that ordering is what puts it beside the content on a wide screen
+    // and directly under the intro on a phone, from one set of markup.
+    var rail = null;
+    if (hasRail) {
+      page.classList.add('page--has-rail');
+      rail = el('aside', { class: 'toolrail', 'aria-label': 'Tools' });
+      page.appendChild(rail);
+    }
+
+    var main = el('main', { id: 'main' });
     sections.forEach(function (s, i) {
-      if (s) main.appendChild(renderSection(s, i));
+      if (!s) return;
+      var node = renderSection(s, i);
+      if (s.type === 'tools' && rail) rail.appendChild(node);
+      else main.appendChild(node);
     });
-    listOf(main, 'sections', 'section');
     page.appendChild(main);
+
+    // The section list is anchored on .page, not <main>, so that a tools
+    // section living in the rail is still found by the editor's controls.
+    listOf(page, 'sections', 'section');
 
     var footer = el('footer', { class: 'page-footer' });
     footer.appendChild(el('p', {}, '© ' + new Date().getFullYear() + ' ' + ((content.profile && content.profile.name) || '')));
@@ -715,7 +826,9 @@
     has: has,
     applyMeta: applyMeta,
     applyAccent: applyAccent,
-    contrastRatio: contrastRatio
+    contrastRatio: contrastRatio,
+    svgIcon: svgIcon,
+    initialsOf: initialsOf
   };
 
   if (document.readyState === 'loading') {
