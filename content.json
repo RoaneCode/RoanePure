@@ -2,7 +2,7 @@
   "meta": {
     "siteTitle": "Alex Morgan — Operations Manager",
     "description": "Operations manager with nine years turning messy processes into systems that hold up under pressure.",
-    "theme": "classic",
+    "theme": "dark",
     "accentColor": "#1f4d6b"
   },
   "profile": {
@@ -31,7 +31,7 @@
       "type": "timeline",
       "items": [
         {
-          "role": "Data & Systems Coordinator (Remote)",
+          "role": "Data & Systems Coordinator",
           "org": "Move Mountains Co.",
           "location": "Rhode Island, USA",
           "start": "2024",
