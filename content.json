@@ -133,21 +133,6 @@
           ]
         },
         {
-          "group": "Analysis & Tools",
-          "skills": [
-            "Google Sheets (advanced)",
-            "Claude AI",
-            "Zapier",
-            "Google App Script",
-            "JotForm",
-            "Dubsado",
-            "Visual Studio",
-            "Slack",
-            "Dropbox",
-            "Synology"
-          ]
-        },
-        {
           "group": "Leadership",
           "skills": [
             "Team leadership",
@@ -188,7 +173,7 @@
     },
     {
       "id": "tools",
-      "title": "Tools",
+      "title": "Analysis & Tools",
       "type": "tools",
       "items": [
         {
