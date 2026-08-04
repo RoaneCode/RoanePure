@@ -6,11 +6,11 @@
     "accentColor": "#1f4d6b"
   },
   "profile": {
-    "name": "Alex Morgan",
-    "headline": "Operations Manager",
-    "location": "Manchester, United Kingdom",
-    "email": "alex.morgan@example.com",
-    "phone": "+44 7700 900123",
+    "name": "Roane Purificacion",
+    "headline": "Data & Systems Specialist",
+    "location": "Laoag City, Ilocos Norte, Philippines",
+    "email": "roane.pure01@gmail.com",
+    "phone": "+63 961 263 0912",
     "photo": "",
     "summary": "Operations manager with nine years' experience across logistics and professional services. I take processes that grew by accident and rebuild them into systems people can actually follow — usually cutting the time they take in half. Comfortable owning a budget, a team, and the awkward conversation about why the old way isn't working.",
     "links": [
@@ -19,7 +19,7 @@
         "url": "https://www.linkedin.com/in/example"
       },
       {
-        "label": "Email",
+        "label": "Facebook",
         "url": "mailto:alex.morgan@example.com"
       }
     ]
@@ -31,10 +31,10 @@
       "type": "timeline",
       "items": [
         {
-          "role": "Operations Manager",
-          "org": "Northgate Logistics",
-          "location": "Manchester",
-          "start": "2021",
+          "role": "Data & Systems Coordinator",
+          "org": "Move Mountains Co.",
+          "location": "Rhode Island, USA",
+          "start": "2024",
           "end": "Present",
           "bullets": [
             "Lead a team of 14 across scheduling, dispatch, and customer resolution.",
