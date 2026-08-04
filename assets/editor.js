@@ -426,6 +426,7 @@
     });
     bar.appendChild(colour);
 
+    bar.appendChild(button('Site details', openSiteDetails));
     bar.appendChild(button('Add section', function () { addSection(); }));
     bar.appendChild(button('Print / PDF', function () { window.print(); }));
     bar.appendChild(button('View as visitor', function () { setPreview(true); }));
@@ -867,6 +868,45 @@
       { key: 'description', label: 'Short description' }
     ]
   };
+
+  // Page-wide settings that aren't visible anywhere on the page itself:
+  // the browser tab title and the blurb search engines and chat apps show.
+  function openSiteDetails() {
+    if (!P.state.content.meta) P.state.content.meta = {};
+    var meta = P.state.content.meta;
+    var profile = P.state.content.profile || {};
+    var autoTitle = (profile.name || 'Portfolio') + (profile.headline ? ' — ' + profile.headline : '');
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Site details'));
+      box.appendChild(el('p', {}, 'These don’t appear on the page. They control what people see in the browser tab, in search results, and when your link is shared.'));
+
+      var title = field(box, 'Browser tab title', meta.siteTitle, { placeholder: autoTitle });
+      box.appendChild(el('p', { style: 'margin-top:-.5rem;font-size:.82rem' },
+        'Leave empty to use your name and job title automatically: “' + autoTitle + '”'));
+
+      var desc = field(box, 'Short description', meta.description, {
+        type: 'textarea',
+        placeholder: 'One or two sentences about you'
+      });
+      box.appendChild(el('p', { style: 'margin-top:-.5rem;font-size:.82rem' },
+        'Shown under your link in Google, and in the preview card when you paste the link into LinkedIn, WhatsApp or Slack. Around 150 characters works best.'));
+
+      actions(box, [
+        {
+          label: 'Save', primary: true, onClick: function () {
+            meta.siteTitle = title.value.trim();
+            meta.description = desc.value.trim();
+            P.applyMeta(P.state.content);
+            markDirty();
+            close();
+            toast('Updated. Press Save & Publish to make it live.');
+          }
+        },
+        { label: 'Cancel', onClick: close }
+      ]);
+    });
+  }
 
   function openDetails(itemPath, kind) {
     var fields = DETAIL_FIELDS[kind];
