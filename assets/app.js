@@ -556,8 +556,46 @@
 
     root.appendChild(page);
 
+    setupReveal(page);
+
     // Let the editor re-attach its controls after every re-render.
     document.dispatchEvent(new CustomEvent('portfolio:rendered'));
+  }
+
+  /* -------------------------------------------------------- scroll reveal */
+
+  // Fade sections up as they scroll into view. Everything here is additive:
+  // the .reveal class (which hides an element) is only ever applied when we
+  // are certain we can also remove it. If anything is unsupported, or the
+  // visitor prefers reduced motion, or the owner is editing, the page just
+  // renders normally.
+  function setupReveal(page) {
+    if (State.editing) return;
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var targets = page.querySelectorAll('.section');
+    if (!targets.length) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.02 });
+
+    targets.forEach(function (node) {
+      node.classList.add('reveal');
+      observer.observe(node);
+    });
+
+    // Safety net: if for any reason the observer never fires (an odd
+    // browser, a restored scroll position, a background tab), reveal
+    // everything anyway rather than leaving the page blank.
+    setTimeout(function () {
+      targets.forEach(function (node) { node.classList.add('is-visible'); });
+    }, 1600);
   }
 
   /* ------------------------------------------------------------ lightbox */

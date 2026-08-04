@@ -104,6 +104,7 @@ Everything editable gets a dashed blue outline. Click any of it and type.
 | **↑ ↓** | Moves something up or down |
 | **⚙ Details** | Opens fields you can't type on the page directly — web addresses, descriptions |
 | **🗑 Delete** | Removes it (asks first) |
+| **Site details** | The browser tab title, and the blurb shown in Google and link previews |
 | **Add section** | Adds a whole new section, e.g. Volunteering or Publications |
 | **View as visitor** | Shows exactly what other people see |
 | **Save & Publish** | Sends your changes live |
@@ -111,6 +112,15 @@ Everything editable gets a dashed blue outline. Click any of it and type.
 **Nothing is public until you press Save & Publish.** After saving, allow about a minute for the public site to catch up — that's GitHub rebuilding it.
 
 The dot next to "Editing" in the toolbar turns **amber** when you have unsaved changes and **green** when everything is saved.
+
+### The browser tab title
+
+Click **Site details** in the toolbar. Two fields:
+
+- **Browser tab title** — the text on the browser tab, and the headline in Google results. Leave it empty and it uses your name and job title automatically, updating itself whenever you change them.
+- **Short description** — the sentence under your link in Google, and in the preview card when you paste your link into LinkedIn, WhatsApp or Slack. About 150 characters is the sweet spot.
+
+Neither appears anywhere on the page itself.
 
 ### Things that behave deliberately
 
@@ -147,6 +157,7 @@ Pick from the **design dropdown** in the toolbar. It changes instantly so you ca
 | Design | Best for |
 |---|---|
 | **Classic professional** | Finance, law, academia, corporate, operations. The default. |
+| **Editorial** | When you want presence without losing formality. Magazine typesetting — numbered sections, an opening drop capital, warm paper. Still entirely appropriate for a serious application. |
 | **Clean & minimal** | Almost anything. Calm and modern. |
 | **Bold & modern** | Design, marketing, creative roles. |
 | **Dark & technical** | Engineering, data, technical roles. |

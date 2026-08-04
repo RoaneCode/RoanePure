@@ -60,6 +60,30 @@
   --tag-transform: none !important;
 
   --rule-weight: 1px !important;
+
+  /* Every ornament off. A printed CV wants no drop caps, no section
+     numbering, no background wash. */
+  --section-number-display: none !important;
+  --section-flourish-display: none !important;
+  --name-rule-display: none !important;
+  --entry-marker-display: none !important;
+  --dropcap-float: none !important;
+  --dropcap-size: inherit !important;
+  --dropcap-leading: inherit !important;
+  --dropcap-color: inherit !important;
+  --dropcap-pad: 0 !important;
+  --lead-size: 10pt !important;
+  --lead-style: normal !important;
+  --page-texture: none !important;
+  --card-lift: 0 !important;
+  --numerals: normal !important;
+}
+
+/* The reveal animation must never leave anything faded out on paper. */
+.reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
 }
 
 @page {
@@ -68,6 +92,7 @@
 
 html, body {
   background: #fff !important;
+  background-image: none !important;
   color: #000 !important;
   font-size: 10.5pt;
   line-height: 1.4;

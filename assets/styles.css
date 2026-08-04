@@ -17,11 +17,15 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--page-texture);
+  background-repeat: no-repeat, repeat;
+  background-attachment: scroll;
   color: var(--text);
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.65;
+  font-variant-numeric: var(--numerals);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;               /* belt-and-braces against sideways scroll */
 }
@@ -174,10 +178,36 @@ a:hover { text-decoration: none; }
   margin-top: .35rem;
 }
 
+/* Short accent bar under the name. A theme turns it on by setting
+   --name-rule-display: block. */
+.masthead__name::after {
+  content: '';
+  display: var(--name-rule-display);
+  width: var(--name-rule-width);
+  height: var(--name-rule-height);
+  background: var(--accent);
+  margin-top: .7rem;
+  border-radius: 999px;
+}
+
 .masthead__summary {
   max-width: var(--measure);
   color: var(--text-muted);
   margin-top: 1.1rem;
+  font-size: var(--lead-size);
+  font-style: var(--lead-style);
+}
+
+/* Opening capital. Themes that don't want one leave --dropcap-float at
+   'none', which makes every one of these declarations a no-op. */
+.masthead__summary::first-letter {
+  float: var(--dropcap-float);
+  font-family: var(--font-display);
+  font-size: var(--dropcap-size);
+  line-height: var(--dropcap-leading);
+  font-weight: var(--dropcap-weight);
+  color: var(--dropcap-color);
+  padding: var(--dropcap-pad);
 }
 
 /* Contact + links. Every row is a 44px-tall tap target. */
@@ -209,10 +239,15 @@ a:hover { text-decoration: none; }
 
 /* --- Sections ----------------------------------------------------------- */
 
-.section { margin-bottom: 2.75rem; }
+main { counter-reset: section; }
+
+.section { margin-bottom: 2.75rem; counter-increment: section; }
 .section:last-child { margin-bottom: 0; }
 
 .section__title {
+  display: flex;
+  align-items: baseline;
+  gap: .75rem;
   font-family: var(--section-title-font);
   font-size: var(--section-title-size);
   font-weight: var(--section-title-weight);
@@ -222,6 +257,30 @@ a:hover { text-decoration: none; }
   padding-bottom: .5rem;
   margin-bottom: 1.35rem;
   border-bottom: var(--section-rule);
+}
+
+/* 01, 02, 03 … generated entirely by CSS, so the numbers renumber
+   themselves when you add, delete or reorder a section. */
+.section__title::before {
+  content: counter(section, decimal-leading-zero);
+  display: var(--section-number-display);
+  flex: 0 0 auto;
+  font-size: var(--section-number-size);
+  font-weight: var(--section-number-weight);
+  color: var(--section-number-color);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .06em;
+}
+
+/* Hairline running off the end of the heading to the right margin. */
+.section__title::after {
+  content: '';
+  display: var(--section-flourish-display);
+  flex: 1 1 auto;
+  height: 1px;
+  min-width: 1rem;
+  align-self: center;
+  background: linear-gradient(to right, var(--border) 0%, transparent 100%);
 }
 
 /* --- Timeline (experience / education) ---------------------------------- */
@@ -237,11 +296,32 @@ a:hover { text-decoration: none; }
 }
 
 .entry__role {
+  position: relative;
   font-family: var(--font-display);
   font-size: 1.12rem;
   font-weight: 700;
   line-height: 1.3;
   overflow-wrap: break-word;
+}
+
+/* Small accent tick in the left margin beside each job title. Sits outside
+   the text column so it never affects wrapping, and is hidden on narrow
+   screens where there is no margin to put it in. */
+.entry__role::before {
+  content: '';
+  display: none;
+  position: absolute;
+  left: -1.15rem;
+  top: .52em;
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 1px;
+  transform: rotate(45deg);
+}
+
+@media (min-width: 52em) {
+  .entry__role::before { display: var(--entry-marker-display); }
 }
 
 .entry__org {
@@ -305,6 +385,18 @@ a:hover { text-decoration: none; }
   flex-direction: column;
   gap: .6rem;
   min-width: 0;
+  transition: transform .28s cubic-bezier(.2, .7, .3, 1),
+              box-shadow .28s ease,
+              border-color .28s ease;
+}
+
+/* Only on devices with a real pointer — a hover effect on a touchscreen
+   sticks after tapping, which looks broken. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    transform: translateY(var(--card-lift));
+    box-shadow: var(--card-shadow-hover);
+  }
 }
 
 .card__image {
@@ -495,6 +587,28 @@ a:hover { text-decoration: none; }
 /* Attachments nested inside an entry or card */
 .attachments { display: grid; gap: .4rem; margin-top: .75rem; }
 .attachments .file { padding: .5rem .7rem; }
+
+/* --- Scroll reveal ------------------------------------------------------
+   Sections fade up as they come into view. The hidden state is applied by
+   JavaScript (app.js), never in the stylesheet — so if scripting or
+   IntersectionObserver is unavailable, content is simply visible rather
+   than stuck invisible. Suppressed for reduced-motion and while editing. */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .65s ease, transform .65s cubic-bezier(.2, .7, .3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
 
 /* --- Footer ------------------------------------------------------------- */
 

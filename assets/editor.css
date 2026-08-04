@@ -153,6 +153,25 @@ body.ed-on {
   .ed-select { max-width: none; flex: 1 1 10rem; }
 }
 
+/* Never animate while editing. Re-rendering happens on every add, delete
+   and reorder, which would re-trigger the fade on the whole page each time. */
+body.ed-on .reveal,
+body.ed-preview .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* The drop capital fights with a text cursor, so it is stood down while
+   the intro paragraph is being edited. It returns in visitor view. */
+body.ed-on .masthead__summary::first-letter {
+  float: none;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  padding: 0;
+}
+
 /* ------------------------------------------------------------- edit marks */
 
 body.ed-on [data-path] {

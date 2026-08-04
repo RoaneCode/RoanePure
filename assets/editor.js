@@ -28,10 +28,11 @@
   var UPLOAD_DIR = 'uploads';
 
   var THEMES = [
-    { id: 'classic', name: 'Classic professional' },
-    { id: 'minimal', name: 'Clean & minimal' },
-    { id: 'bold',    name: 'Bold & modern' },
-    { id: 'dark',    name: 'Dark & technical' }
+    { id: 'classic',   name: 'Classic professional' },
+    { id: 'editorial', name: 'Editorial (artistic)' },
+    { id: 'minimal',   name: 'Clean & minimal' },
+    { id: 'bold',      name: 'Bold & modern' },
+    { id: 'dark',      name: 'Dark & technical' }
   ];
 
   var SECTION_TYPES = [
