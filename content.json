@@ -259,6 +259,20 @@
           "logo": "",
           "color": "",
           "url": ""
+        },
+        {
+          "name": "Zoom",
+          "icon": "zoom",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Quire",
+          "icon": "",
+          "logo": "",
+          "color": "",
+          "url": ""
         }
       ]
     }
