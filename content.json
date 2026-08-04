@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "siteTitle": "Alex Morgan — Operations Manager",
+    "description": "Operations manager with nine years turning messy processes into systems that hold up under pressure.",
+    "theme": "classic",
+    "accentColor": "#1f4d6b"
+  },
+  "profile": {
+    "name": "Alex Morgan",
+    "headline": "Operations Manager",
+    "location": "Manchester, United Kingdom",
+    "email": "alex.morgan@example.com",
+    "phone": "+44 7700 900123",
+    "photo": "",
+    "summary": "Operations manager with nine years' experience across logistics and professional services. I take processes that grew by accident and rebuild them into systems people can actually follow — usually cutting the time they take in half. Comfortable owning a budget, a team, and the awkward conversation about why the old way isn't working.",
+    "links": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/example"
+      },
+      {
+        "label": "Email",
+        "url": "mailto:alex.morgan@example.com"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "experience",
+      "title": "Experience",
+      "type": "timeline",
+      "items": [
+        {
+          "role": "Operations Manager",
+          "org": "Northgate Logistics",
+          "location": "Manchester",
+          "start": "2021",
+          "end": "Present",
+          "bullets": [
+            "Lead a team of 14 across scheduling, dispatch, and customer resolution.",
+            "Rebuilt the returns process end to end, cutting average handling time from 9 days to 4 and removing roughly £180k a year in avoidable cost.",
+            "Introduced weekly capacity planning that took on-time delivery from 87% to 96% within two quarters.",
+            "Own a £2.3m operating budget and report performance directly to the board each month."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Senior Operations Analyst",
+          "org": "Halden & Rowe",
+          "location": "Leeds",
+          "start": "2018",
+          "end": "2021",
+          "bullets": [
+            "Built the reporting suite the leadership team still runs on, replacing a fortnightly manual spreadsheet with a live dashboard.",
+            "Ran the workflow redesign for a 60-person service department, consulted through three rounds of staff feedback before rollout.",
+            "Trained 40+ colleagues on the new system, with adoption at 94% inside a month."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Operations Coordinator",
+          "org": "Bellway Supply Co.",
+          "location": "Leeds",
+          "start": "2016",
+          "end": "2018",
+          "bullets": [
+            "Coordinated inbound scheduling for four regional depots.",
+            "Cut stock discrepancies by 62% by introducing a simple daily reconciliation check."
+          ],
+          "attachments": []
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "title": "Selected Projects",
+      "type": "cards",
+      "items": [
+        {
+          "name": "Returns Process Rebuild",
+          "description": "Mapped every step of a returns process that had grown unmanaged for six years, then rebuilt it around four decision points instead of nineteen. Cut handling time by more than half and gave the team a process they could explain to a new starter in ten minutes.",
+          "tags": [
+            "Process design",
+            "Change management",
+            "Cost reduction"
+          ],
+          "url": "",
+          "image": "",
+          "imageAlt": "",
+          "attachments": []
+        },
+        {
+          "name": "Live Capacity Dashboard",
+          "description": "Replaced a fortnightly spreadsheet nobody trusted with a live view of depot capacity against booked volume. Planning meetings went from two hours of arguing about numbers to twenty minutes of deciding what to do about them.",
+          "tags": [
+            "Reporting",
+            "Forecasting",
+            "Stakeholder buy-in"
+          ],
+          "url": "",
+          "image": "",
+          "imageAlt": "",
+          "attachments": []
+        },
+        {
+          "name": "Depot Onboarding Programme",
+          "description": "Designed the onboarding used across all four depots after we found new starters were taking eleven weeks to reach full productivity. Structured it into three checkpoints with a named buddy at each. Time to productivity came down to six weeks.",
+          "tags": [
+            "Training",
+            "Documentation",
+            "Team development"
+          ],
+          "url": "",
+          "image": "",
+          "imageAlt": "",
+          "attachments": []
+        }
+      ]
+    },
+    {
+      "id": "skills",
+      "title": "Skills",
+      "type": "groups",
+      "items": [
+        {
+          "group": "Operations",
+          "skills": [
+            "Process mapping",
+            "Capacity planning",
+            "Budget ownership",
+            "Vendor management",
+            "Continuous improvement"
+          ]
+        },
+        {
+          "group": "Analysis & Tools",
+          "skills": [
+            "Excel (advanced)",
+            "Power BI",
+            "SQL (working)",
+            "SAP",
+            "Asana"
+          ]
+        },
+        {
+          "group": "Leadership",
+          "skills": [
+            "Team leadership",
+            "Coaching",
+            "Change management",
+            "Board reporting"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "type": "timeline",
+      "items": [
+        {
+          "role": "BSc Business Management, 2:1",
+          "org": "University of Leeds",
+          "location": "Leeds",
+          "start": "2013",
+          "end": "2016",
+          "bullets": [
+            "Dissertation on lean methodology in small-scale distribution."
+          ],
+          "attachments": []
+        }
+      ]
+    },
+    {
+      "id": "certifications",
+      "title": "Certifications",
+      "type": "text",
+      "items": [
+        "Lean Six Sigma Green Belt — British Quality Foundation, 2022",
+        "PRINCE2 Practitioner — AXELOS, 2020",
+        "IOSH Managing Safely, 2019"
+      ]
+    }
+  ]
+}
