@@ -1,0 +1,358 @@
+/* ==========================================================================
+   themes.css — the five switchable designs.
+
+   Every theme is ONLY a set of custom properties. No theme changes layout,
+   structure, or HTML, which is why switching designs can never break the
+   page or touch your content.
+
+   The active theme comes from meta.theme in content.json and is applied as
+   data-theme="..." on <html>.
+
+   To add a fifth design: copy a block below, rename it, change the values,
+   then add it to THEMES in assets/editor.js. Nothing else needs to change.
+   ========================================================================== */
+
+:root {
+  /* Overridden per-theme below. These defaults = "classic". */
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: Georgia, 'Times New Roman', serif;
+  --font-meta: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --bg: #ffffff;
+  --bg-sunken: #f6f5f2;
+  --bg-raised: #ffffff;
+
+  --text: #1a1a1a;
+  --text-muted: #5c5c5c;
+  --text-faint: #7d7d7d;
+
+  --accent: #1f4d6b;
+  --accent-contrast: #ffffff;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
+
+  --border: #dcd8d0;
+  --border-strong: #1a1a1a;
+
+  --radius: 2px;
+  --radius-lg: 3px;
+  --shadow: none;
+  --shadow-lg: none;
+
+  --measure: 68ch;
+  --page-max: 52rem;
+
+  --name-size: clamp(2rem, 7vw, 3rem);
+  --name-weight: 700;
+  --name-spacing: -0.01em;
+  --name-transform: none;
+
+  --section-title-size: clamp(0.95rem, 2.6vw, 1.05rem);
+  --section-title-weight: 700;
+  --section-title-spacing: 0.12em;
+  --section-title-transform: uppercase;
+  --section-title-font: var(--font-meta);
+  --section-rule: 1px solid var(--border-strong);
+
+  --card-bg: transparent;
+  --card-border: 1px solid var(--border);
+  --card-pad: 1.1rem;
+
+  --tag-bg: var(--bg-sunken);
+  --tag-text: var(--text-muted);
+  --tag-border: 1px solid var(--border);
+  --tag-radius: 2px;
+  --tag-transform: none;
+
+  --rule-weight: 1px;
+  --motion: 1;
+
+  /* --- Decorative hooks -------------------------------------------------
+     Every one of these is OFF by default, so a theme only opts in to the
+     ornament it wants. Nothing here changes the HTML — a theme can never
+     break the layout. */
+
+  --section-number-display: none;   /* 01, 02, 03 beside section headings */
+  --section-number-color: var(--accent);
+  --section-number-size: .72em;
+  --section-number-weight: 600;
+
+  --section-flourish-display: none; /* hairline trailing off the heading   */
+
+  --name-rule-display: none;        /* short accent bar under the name     */
+  --name-rule-width: 3.25rem;
+  --name-rule-height: 3px;
+
+  --dropcap-float: none;            /* large opening capital on the intro  */
+  --dropcap-size: inherit;
+  --dropcap-leading: inherit;
+  --dropcap-weight: inherit;
+  --dropcap-color: inherit;
+  --dropcap-pad: 0;
+
+  --lead-size: 1rem;                /* the intro paragraph                 */
+  --lead-style: normal;
+
+  --page-texture: none;             /* subtle background wash              */
+
+  --card-lift: 0;                   /* hover movement on project cards     */
+  --card-shadow-hover: var(--shadow);
+
+  --entry-marker-display: none;     /* accent tick beside each job title   */
+  --numerals: normal;               /* oldstyle figures where available    */
+}
+
+/* --------------------------------------------------------------------------
+   1. CLASSIC PROFESSIONAL (default)
+   Reads like a well-set resume. Serif, ruled, conservative, highly legible.
+   -------------------------------------------------------------------------- */
+[data-theme='classic'] {
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: Georgia, 'Times New Roman', serif;
+
+  --bg: #ffffff;
+  --bg-sunken: #f6f5f2;
+  --text: #1a1a1a;
+  --text-muted: #5c5c5c;
+
+  --border: #dcd8d0;
+  --border-strong: #1a1a1a;
+
+  --page-max: 52rem;
+  --name-transform: none;
+  --section-rule: 1px solid var(--border-strong);
+  --card-bg: transparent;
+  --shadow: none;
+
+  /* A little craft, kept quiet: an accent bar under the name, a tick beside
+     each job title, and a slight lift on project cards. Enough to stop it
+     reading as a plain document without costing it any formality. */
+  --name-rule-display: block;
+  --entry-marker-display: block;
+  --card-lift: -2px;
+  --card-shadow-hover: 0 10px 24px -16px rgba(26, 26, 26, .35);
+}
+
+/* --------------------------------------------------------------------------
+   2. EDITORIAL
+   The artistic one. Built from print typography rather than web convention:
+   old-style serif, numbered sections with a trailing hairline, an opening
+   drop capital, warm paper ground and oldstyle figures. Ornamental, but
+   every ornament is a real typesetting device — so it still reads as
+   serious work rather than decoration for its own sake.
+   -------------------------------------------------------------------------- */
+[data-theme='editorial'] {
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua',
+                  'Hoefler Text', Georgia, 'Times New Roman', serif;
+  --font-body: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua',
+               'Hoefler Text', Georgia, 'Times New Roman', serif;
+  --font-meta: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+
+  --bg: #fbfaf7;
+  --bg-sunken: #f3f0e9;
+  --bg-raised: #fffefb;
+
+  --text: #14110e;
+  --text-muted: #4a443d;
+  --text-faint: #8a8177;
+
+  --accent: #1c4b52;
+  --border: #e0dace;
+  --border-strong: #14110e;
+
+  --radius: 2px;
+  --radius-lg: 3px;
+  --shadow: none;
+
+  --page-max: 50rem;
+  --measure: 62ch;
+
+  --name-size: clamp(2.4rem, 9vw, 4.1rem);
+  --name-weight: 400;          /* the size carries it; weight would shout */
+  --name-spacing: -0.022em;
+
+  --section-title-size: clamp(.82rem, 2.2vw, .9rem);
+  --section-title-weight: 600;
+  --section-title-spacing: .16em;
+  --section-title-transform: uppercase;
+  --section-title-font: var(--font-meta);
+  --section-rule: none;        /* replaced by the flourish below */
+
+  --card-bg: transparent;
+  --card-border: 1px solid var(--border);
+  --card-pad: 1.4rem;
+
+  --tag-bg: transparent;
+  --tag-text: var(--text-muted);
+  --tag-border: 1px solid var(--border);
+  --tag-radius: 999px;
+
+  /* The ornament */
+  --section-number-display: block;
+  --section-flourish-display: block;
+  --name-rule-display: block;
+  --name-rule-width: 4rem;
+  --name-rule-height: 2px;
+  --entry-marker-display: block;
+
+  --dropcap-float: left;
+  --dropcap-size: 3.35em;
+  --dropcap-leading: .82;
+  --dropcap-weight: 400;
+  --dropcap-color: var(--accent);
+  --dropcap-pad: .06em .1em 0 0;
+
+  --lead-size: 1.09rem;
+  --numerals: oldstyle-nums;
+
+  --card-lift: -3px;
+  --card-shadow-hover: 0 14px 30px -18px rgba(20, 17, 14, .45);
+
+  /* Warm paper: a faint vertical wash plus an even fainter horizontal
+     ruling. Both are gradients — no image files, nothing extra to load. */
+  --page-texture:
+    linear-gradient(180deg, rgba(28, 75, 82, .045) 0%, rgba(28, 75, 82, 0) 22rem),
+    repeating-linear-gradient(0deg, rgba(20, 17, 14, .016) 0 1px, transparent 1px 4px);
+}
+
+/* --------------------------------------------------------------------------
+   3. CLEAN & MINIMAL
+   White space, one accent, quiet sans-serif. Calm and contemporary.
+   -------------------------------------------------------------------------- */
+[data-theme='minimal'] {
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-meta: var(--font-body);
+
+  --bg: #ffffff;
+  --bg-sunken: #fafafa;
+  --text: #18181b;
+  --text-muted: #71717a;
+  --text-faint: #a1a1aa;
+
+  --border: #e8e8ea;
+  --border-strong: #e8e8ea;
+
+  --radius: 8px;
+  --radius-lg: 12px;
+
+  --page-max: 46rem;
+
+  --name-size: clamp(1.9rem, 6.5vw, 2.6rem);
+  --name-weight: 600;
+  --name-spacing: -0.03em;
+
+  --section-title-size: 0.78rem;
+  --section-title-spacing: 0.08em;
+  --section-title-weight: 600;
+  --section-rule: none;
+
+  --card-bg: transparent;
+  --card-border: 1px solid var(--border);
+  --card-pad: 1.25rem;
+
+  --tag-bg: #fafafa;
+  --tag-radius: 999px;
+  --tag-border: 1px solid var(--border);
+}
+
+/* --------------------------------------------------------------------------
+   4. BOLD & MODERN
+   Large display type, strong colour, generous scale. Confident and graphic.
+   -------------------------------------------------------------------------- */
+[data-theme='bold'] {
+  --font-display: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-meta: var(--font-body);
+
+  --bg: #fffdf8;
+  --bg-sunken: #f4efe4;
+  --text: #14110f;
+  --text-muted: #57504a;
+  --text-faint: #857d75;
+
+  --accent: #c2410c;
+  --border: #e2d9c8;
+  --border-strong: #14110f;
+
+  --radius: 4px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 2px rgba(20, 17, 15, .05);
+  --shadow-lg: 0 12px 32px -12px rgba(20, 17, 15, .22);
+
+  --page-max: 58rem;
+
+  --name-size: clamp(2.6rem, 12vw, 5.5rem);
+  --name-weight: 800;
+  --name-spacing: -0.045em;
+
+  --section-title-size: clamp(1rem, 3vw, 1.15rem);
+  --section-title-weight: 800;
+  --section-title-spacing: 0.02em;
+  --section-title-transform: none;
+  --section-title-font: var(--font-display);
+  --section-rule: 3px solid var(--border-strong);
+
+  --card-bg: var(--bg-sunken);
+  --card-border: none;
+  --card-pad: 1.5rem;
+
+  --tag-bg: transparent;
+  --tag-text: var(--text);
+  --tag-border: 1.5px solid var(--border-strong);
+  --tag-radius: 999px;
+  --tag-transform: uppercase;
+
+  --rule-weight: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   5. DARK & TECHNICAL
+   Dark ground, monospace accents, code-inspired. Built as a true dark theme
+   (not an inverted light one) so contrast stays comfortable to read.
+   -------------------------------------------------------------------------- */
+[data-theme='dark'] {
+  --font-display: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, Consolas, monospace;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-meta: var(--font-display);
+
+  --bg: #0d1117;
+  --bg-sunken: #161b22;
+  --bg-raised: #161b22;
+
+  --text: #e6edf3;
+  --text-muted: #9aa7b4;
+  --text-faint: #7d8792;
+
+  --accent: #4ea1ff;
+  --accent-contrast: #0d1117;
+
+  --border: #262d36;
+  --border-strong: #3a434f;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+  --shadow: none;
+  --shadow-lg: 0 12px 32px -12px rgba(0, 0, 0, .6);
+
+  --page-max: 54rem;
+
+  --name-size: clamp(1.9rem, 7vw, 2.9rem);
+  --name-weight: 700;
+  --name-spacing: -0.02em;
+
+  --section-title-size: 0.85rem;
+  --section-title-weight: 600;
+  --section-title-spacing: 0.06em;
+  --section-title-transform: lowercase;
+  --section-rule: 1px solid var(--border);
+
+  --card-bg: var(--bg-sunken);
+  --card-border: 1px solid var(--border);
+  --card-pad: 1.25rem;
+
+  --tag-bg: rgba(78, 161, 255, .1);
+  --tag-text: var(--accent);
+  --tag-border: 1px solid rgba(78, 161, 255, .25);
+  --tag-radius: 4px;
+}
