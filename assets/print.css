@@ -1,0 +1,223 @@
+/* ==========================================================================
+   print.css — the PDF / paper version.
+
+   Deliberately IGNORES the active screen theme and always renders a classic
+   professional resume: black serif on white. A dark or bold theme would
+   produce an unreadable, ink-hungry document, and recruiters (and the
+   applicant-tracking systems that parse CVs) expect a conventional layout.
+
+   Linked with media="print", so none of this affects the screen.
+   ========================================================================== */
+
+/* Force classic values over whatever theme is active. !important is needed
+   because [data-theme='...'] rules would otherwise win on specificity. */
+:root,
+:root[data-theme] {
+  --font-display: Georgia, 'Times New Roman', serif !important;
+  --font-body: Georgia, 'Times New Roman', serif !important;
+  --font-meta: Georgia, 'Times New Roman', serif !important;
+
+  --bg: #fff !important;
+  --bg-sunken: #fff !important;
+  --bg-raised: #fff !important;
+
+  --text: #000 !important;
+  --text-muted: #1a1a1a !important;
+  --text-faint: #444 !important;
+
+  --accent: #000 !important;
+  --accent-soft: transparent !important;
+
+  --border: #999 !important;
+  --border-strong: #000 !important;
+
+  --radius: 0 !important;
+  --radius-lg: 0 !important;
+  --shadow: none !important;
+  --shadow-lg: none !important;
+
+  --page-max: none !important;
+
+  --name-size: 22pt !important;
+  --name-weight: 700 !important;
+  --name-spacing: 0 !important;
+  --name-transform: none !important;
+
+  --section-title-size: 10pt !important;
+  --section-title-weight: 700 !important;
+  --section-title-spacing: .1em !important;
+  --section-title-transform: uppercase !important;
+  --section-title-font: Georgia, 'Times New Roman', serif !important;
+  --section-rule: 1px solid #000 !important;
+
+  --card-bg: transparent !important;
+  --card-border: none !important;
+  --card-pad: 0 !important;
+
+  --tag-bg: transparent !important;
+  --tag-text: #333 !important;
+  --tag-border: none !important;
+  --tag-transform: none !important;
+
+  --rule-weight: 1px !important;
+}
+
+@page {
+  margin: 15mm 14mm;
+}
+
+html, body {
+  background: #fff !important;
+  color: #000 !important;
+  font-size: 10.5pt;
+  line-height: 1.4;
+}
+
+/* --- Strip everything that isn't the resume ----------------------------- */
+
+.skip-link,
+.editor-bar,
+.editor-panel,
+.editor-toast,
+.editor-banner,
+.ed-controls,
+.ed-add,
+.ed-chip,
+.lightbox,
+.page-footer,
+.gallery,
+.card__image,
+.noscript-msg,
+[data-print='hide'] {
+  display: none !important;
+}
+
+/* Editing outlines must never appear on paper. */
+[contenteditable] {
+  outline: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* --- Compact resume header ---------------------------------------------- */
+
+.page {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.masthead {
+  display: block !important;
+  text-align: center;
+  padding-bottom: .5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #000;
+  break-inside: avoid;
+}
+
+.avatar { display: none !important; }   /* photos are not standard on a printed CV */
+
+.masthead__name { font-size: 22pt; margin-bottom: 2pt; }
+.masthead__headline { font-size: 11.5pt; font-weight: 600; color: #000 !important; }
+.masthead__location { font-size: 9.5pt; margin-top: 1pt; }
+
+.contact {
+  justify-content: center;
+  gap: 0 12pt;
+  margin-top: 4pt;
+  font-size: 9.5pt;
+}
+.contact a, .contact span {
+  min-height: 0 !important;
+  color: #000 !important;
+  text-decoration: none !important;
+}
+
+.masthead__summary {
+  margin: 8pt auto 0;
+  max-width: none;
+  text-align: left;
+  font-size: 10pt;
+}
+
+/* --- Sections ----------------------------------------------------------- */
+
+.section {
+  margin-bottom: 12pt !important;
+  break-inside: auto;
+}
+
+.section__title {
+  font-size: 10pt !important;
+  margin-bottom: 6pt !important;
+  padding-bottom: 2pt !important;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Never split a job or project across a page boundary. */
+.entry,
+.card,
+.group,
+.file {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.entry { margin-bottom: 9pt !important; }
+.entry__head { flex-direction: row !important; justify-content: space-between; gap: 10pt; }
+.entry__role { font-size: 11pt; }
+.entry__org { font-size: 10pt; color: #000 !important; }
+.entry__meta { font-size: 9.5pt; text-align: right; }
+.entry__bullets { gap: 1pt !important; }
+.entry__bullets li { font-size: 10pt; }
+
+/* Projects print as a single readable column, not as cards. */
+.cards { display: block !important; }
+.card {
+  padding: 0 !important;
+  margin-bottom: 9pt;
+  border: none !important;
+  box-shadow: none !important;
+}
+.card__title { font-size: 11pt; }
+.card__desc { font-size: 10pt; }
+/* Tags print as an inline run separated by middots. They must be inline
+   rather than flex items, or the spaces around the separator collapse. */
+.tags, .group__skills { display: block !important; padding-top: 2pt; }
+.tag { padding: 0 !important; font-size: 9.5pt; display: inline !important; }
+.tag:not(:last-child)::after { content: '\00a0·\00a0'; }
+
+.groups { display: block !important; }
+.group { margin-bottom: 5pt; }
+.group__name { font-size: 9.5pt; margin-bottom: 1pt; }
+
+.prose p { font-size: 10pt; }
+
+.file { padding: 0 !important; border: none !important; min-height: 0 !important; }
+.file__icon { display: none !important; }
+.file__label { font-size: 10pt; font-weight: 400; }
+
+/* --- Print link URLs so they survive on paper --------------------------- */
+
+/* A profile link that just says "LinkedIn" is useless on paper, so external
+   links get their address printed. Email and phone are skipped because the
+   link text is already the address. */
+.contact a[target='_blank']::after,
+.card__link[href]::after,
+.file[href]::after {
+  content: '\00a0(' attr(href) ')';
+  font-size: 8.5pt;
+  color: #444;
+  word-break: break-all;
+  font-weight: 400;
+}
+
+.card__link {
+  min-height: 0 !important;
+  font-size: 9.5pt;
+  color: #000 !important;
+  text-decoration: none !important;
+}

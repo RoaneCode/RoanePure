@@ -1,0 +1,495 @@
+/* ==========================================================================
+   editor.css — owner-only interface.
+
+   This file is loaded ONLY when ?edit=1 is in the address, so visitors never
+   download it and none of these rules can affect the public page.
+
+   Deliberately uses its own colour values rather than theme variables: the
+   editing furniture must stay legible and consistent whichever of the four
+   designs is currently applied (including the dark one).
+   ========================================================================== */
+
+:root {
+  --ed-blue: #2563eb;
+  --ed-green: #15803d;
+  --ed-red: #b91c1c;
+  --ed-ink: #111827;
+  --ed-line: #d4d4d8;
+  --ed-panel: #ffffff;
+  --ed-bar-h: 56px;
+}
+
+/* Push the page down so the fixed bar never covers the top of the content. */
+body.ed-on {
+  padding-top: var(--ed-bar-h);
+  padding-bottom: 5.5rem;   /* room for the sticky save bar on mobile */
+}
+
+/* ------------------------------------------------------------------ bar */
+
+.editor-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 8000;
+  min-height: var(--ed-bar-h);
+  background: var(--ed-ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .75rem;
+  padding-top: max(.5rem, env(safe-area-inset-top));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: .875rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.editor-bar::-webkit-scrollbar { display: none; }
+
+.editor-bar__brand {
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  margin-right: .25rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.editor-bar__dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex: 0 0 auto;
+}
+.editor-bar__dot[data-dirty='1'] { background: #fbbf24; }
+
+.editor-bar__spacer { flex: 1 1 auto; min-width: .25rem; }
+
+/* Every control is at least 44px tall — a real tap target on a phone. */
+.ed-btn {
+  appearance: none;
+  min-height: 44px;
+  padding: 0 .85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  flex: 0 0 auto;
+}
+.ed-btn:hover { background: rgba(255, 255, 255, .16); }
+.ed-btn:active { transform: translateY(1px); }
+.ed-btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+.ed-btn--primary {
+  background: var(--ed-green);
+  border-color: transparent;
+}
+.ed-btn--primary:hover { background: #166534; }
+
+.ed-btn--ghost { background: transparent; }
+
+.ed-select {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font: inherit;
+  padding: 0 .6rem;
+  flex: 0 0 auto;
+  max-width: 11rem;
+}
+.ed-select option { color: #111; }
+
+.ed-color {
+  width: 44px; height: 44px;
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(255, 255, 255, .08);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+/* ------------------------------------------------- sticky mobile save bar */
+
+.editor-savebar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 8000;
+  display: none;
+  gap: .5rem;
+  padding: .6rem .75rem;
+  padding-bottom: max(.6rem, env(safe-area-inset-bottom));
+  background: rgba(17, 24, 39, .97);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, .12);
+}
+.editor-savebar .ed-btn { flex: 1 1 auto; justify-content: center; }
+
+@media (max-width: 47.99em) {
+  .editor-savebar { display: flex; }
+  .editor-bar__save { display: none; }   /* it lives in the bottom bar instead */
+
+  /* A fixed bar can't grow, so on a narrow screen its buttons end up
+     scrolled out of sight. Instead let the bar sit at the top of the page,
+     wrap onto as many rows as it needs, and scroll away with the content.
+     Save stays permanently reachable in the bottom bar. */
+  .editor-bar {
+    position: static;
+    flex-wrap: wrap;
+    overflow-x: visible;
+    row-gap: .4rem;
+  }
+  body.ed-on { padding-top: 0; }
+  .ed-select { max-width: none; flex: 1 1 10rem; }
+}
+
+/* ------------------------------------------------------------- edit marks */
+
+body.ed-on [data-path] {
+  outline: 1px dashed rgba(37, 99, 235, .35);
+  outline-offset: 3px;
+  border-radius: 3px;
+  min-width: 2ch;
+  min-height: 1em;
+  transition: outline-color .12s, background-color .12s;
+  cursor: text;
+}
+body.ed-on [data-path]:hover { outline-color: rgba(37, 99, 235, .8); }
+body.ed-on [data-path]:focus {
+  outline: 2px solid var(--ed-blue);
+  outline-offset: 3px;
+  background: rgba(37, 99, 235, .06);
+}
+
+/* Show the field's purpose when it's been left empty. */
+body.ed-on [data-path]:empty::before,
+body.ed-on [data-path][data-empty='1']::before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Links must not navigate away while you're editing their text. */
+body.ed-on a[data-path] { pointer-events: auto; }
+
+/* ---------------------------------------------------------- item controls */
+
+body.ed-on [data-item] {
+  position: relative;
+}
+
+.ed-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin: .35rem 0 .75rem;
+  padding: 0;
+}
+
+/* Photo plus its buttons, kept together as one column. */
+.ed-avatar-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .5rem;
+  flex: 0 0 auto;
+}
+.ed-avatar-holder .ed-controls { margin: 0; }
+
+.ed-chip {
+  appearance: none;
+  min-height: 36px;
+  min-width: 36px;
+  padding: 0 .6rem;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border: 1px solid var(--ed-line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ed-ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+}
+.ed-chip:hover { background: #f3f4f6; border-color: #9ca3af; }
+.ed-chip[disabled] { opacity: .35; cursor: not-allowed; }
+.ed-chip--danger { color: var(--ed-red); border-color: #fca5a5; }
+.ed-chip--danger:hover { background: #fef2f2; }
+
+/* On phones the block controls stack into full-width rows, easier to hit.
+   Scoped to .ed-controls so the small inline chips are not affected. */
+@media (max-width: 30em) {
+  .ed-controls .ed-chip { flex: 1 1 auto; min-height: 44px; }
+}
+
+/* Compact controls that sit beside an inline item (a tag, skill or link)
+   rather than inside it. */
+.ed-inline-controls {
+  display: inline-flex;
+  gap: 2px;
+  vertical-align: middle;
+  margin: 0 .6rem 0 .15rem;
+}
+.ed-inline-controls .ed-chip {
+  min-height: 40px;
+  min-width: 40px;
+  padding: 0 .3rem;
+  font-size: .8rem;
+  line-height: 1;
+}
+
+.ed-add {
+  appearance: none;
+  min-height: 44px;
+  width: 100%;
+  margin-top: .6rem;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border: 1.5px dashed #9ca3af;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ed-blue);
+  cursor: pointer;
+}
+.ed-add:hover { background: rgba(37, 99, 235, .06); border-color: var(--ed-blue); }
+
+.ed-add-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+.ed-add-row .ed-add { width: auto; flex: 1 1 12rem; margin-top: 0; }
+
+/* --------------------------------------------------------------- panels */
+
+.editor-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: rgba(17, 24, 39, .55);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.editor-panel {
+  background: var(--ed-panel);
+  color: var(--ed-ink);
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 30rem;
+  max-height: 90dvh;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: .9rem;
+  line-height: 1.55;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .5);
+}
+
+.editor-panel h2 { font-size: 1.15rem; margin: 0 0 .5rem; }
+.editor-panel h3 { font-size: .95rem; margin: 1.1rem 0 .35rem; }
+.editor-panel p { margin: 0 0 .75rem; color: #4b5563; }
+.editor-panel ol { margin: 0 0 .9rem; padding-left: 1.2rem; list-style: decimal; }
+.editor-panel li { margin-bottom: .35rem; color: #4b5563; }
+.editor-panel a { color: var(--ed-blue); }
+.editor-panel code {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: .1em .35em;
+  font-size: .85em;
+  word-break: break-all;
+}
+
+.editor-panel label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: .3rem;
+}
+
+.editor-panel input[type='text'],
+.editor-panel input[type='password'],
+.editor-panel textarea,
+.editor-panel select {
+  width: 100%;
+  min-height: 44px;
+  padding: .6rem .7rem;
+  border: 1px solid var(--ed-line);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;   /* 16px stops iOS Safari zooming in on focus */
+  margin-bottom: .8rem;
+  background: #fff;
+  color: var(--ed-ink);
+}
+.editor-panel textarea { min-height: 5rem; resize: vertical; }
+
+.editor-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+.editor-panel__actions .ed-btn {
+  background: #f3f4f6;
+  color: var(--ed-ink);
+  border-color: var(--ed-line);
+  flex: 1 1 auto;
+  justify-content: center;
+}
+.editor-panel__actions .ed-btn:hover { background: #e5e7eb; }
+.editor-panel__actions .ed-btn--primary {
+  background: var(--ed-green);
+  color: #fff;
+  border-color: transparent;
+}
+.editor-panel__actions .ed-btn--primary:hover { background: #166534; }
+
+.editor-panel__note {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: .7rem .8rem;
+  font-size: .84rem;
+  color: #78350f;
+  margin-bottom: .9rem;
+}
+.editor-panel__note--bad {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+/* ---------------------------------------------------------------- toasts */
+
+.editor-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 9500;
+  background: var(--ed-ink);
+  color: #fff;
+  padding: .8rem 1.1rem;
+  border-radius: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: .875rem;
+  max-width: min(30rem, calc(100vw - 2rem));
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, .6);
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+}
+.editor-toast--ok { background: var(--ed-green); }
+.editor-toast--bad { background: var(--ed-red); }
+
+@media (max-width: 47.99em) {
+  .editor-toast { bottom: calc(4.5rem + env(safe-area-inset-bottom)); }
+}
+
+/* ------------------------------------------------------- visitor preview */
+
+/* In visitor view every editing affordance is switched off, so what's left
+   is byte-for-byte the page a real visitor's browser builds. */
+body.ed-preview [data-path] {
+  outline: none !important;
+  background: none !important;
+  cursor: auto !important;
+}
+body.ed-preview [data-path]:empty::before,
+body.ed-preview [data-path][data-empty='1']::before { content: none !important; }
+body.ed-preview .ed-controls,
+body.ed-preview .ed-add,
+body.ed-preview .ed-add-row,
+body.ed-preview .editor-bar,
+body.ed-preview .editor-savebar { display: none !important; }
+
+body.ed-preview { padding-top: 44px; padding-bottom: 0; }
+
+.editor-banner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 8000;
+  min-height: 44px;
+  background: #fbbf24;
+  color: #422006;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding: .35rem .75rem;
+  padding-top: max(.35rem, env(safe-area-inset-top));
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  text-align: center;
+}
+.editor-banner .ed-btn {
+  min-height: 34px;
+  background: #422006;
+  color: #fff;
+  border-color: transparent;
+  font-size: .8rem;
+}
+.editor-banner .ed-btn:hover { background: #1c1917; }
+
+/* --------------------------------------------------------------- uploads */
+
+.ed-drop {
+  border: 2px dashed var(--ed-line);
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: .9rem;
+  cursor: pointer;
+}
+.ed-drop--over { border-color: var(--ed-blue); background: rgba(37, 99, 235, .05); }
+
+.ed-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+  margin-bottom: .8rem;
+}
+.ed-progress__fill {
+  height: 100%;
+  background: var(--ed-blue);
+  width: 0;
+  transition: width .2s;
+}
+
+.ed-filelist { margin-bottom: .9rem; }
+.ed-filelist__row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .4rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: .84rem;
+}
+.ed-filelist__name { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.ed-filelist__status { flex: 0 0 auto; color: #6b7280; font-size: .78rem; }
+.ed-filelist__status--ok { color: var(--ed-green); }
+.ed-filelist__status--bad { color: var(--ed-red); }
+
+/* Keep the focused field above the on-screen keyboard rather than behind it. */
+@media (max-width: 47.99em) {
+  body.ed-on { scroll-padding-bottom: 40dvh; scroll-padding-top: calc(var(--ed-bar-h) + 1rem); }
+}
