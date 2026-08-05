@@ -4,7 +4,26 @@
     "description": "Operations manager with nine years turning messy processes into systems that hold up under pressure.",
     "theme": "custom",
     "accentColor": "#1f4d6b",
-    "designs": [],
+    "designs": [
+      {
+        "id": "dmsfr317p",
+        "name": "Design 1",
+        "savedAt": "2026-08-05",
+        "theme": "custom",
+        "accentColor": "#1f4d6b",
+        "palette": {
+          "pageBg": "#fbfaf7",
+          "pageText": "#14110e",
+          "heading": "#14110e"
+        },
+        "banner": {
+          "style": "gradient",
+          "color": "",
+          "color2": "",
+          "textColor": ""
+        }
+      }
+    ],
     "banner": {
       "style": "gradient",
       "color": "",
