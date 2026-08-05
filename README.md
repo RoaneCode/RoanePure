@@ -175,6 +175,14 @@ Pick from the **design dropdown** in the toolbar. It changes instantly so you ca
 | **Bold & modern** | Design, marketing, creative roles. |
 | **Dark & technical** | Engineering, data, technical roles. |
 
+### Labelled lists
+
+**+ Add section → "Labelled list (Label — description)"** gives you entries shaped like:
+
+> **Systems & Automation** — Workflow automation (Zapier), process design, systems troubleshooting, technical support
+
+The label goes bold, the dash is added for you, and the description follows on the same line. Good for grouping capabilities under headings without the whole thing turning into tags.
+
 ### Reordering sections
 
 **Sections** in the toolbar lists everything in order with ↑ ↓ buttons. Move anything anywhere, or delete it.
@@ -244,6 +252,10 @@ Two things are intentional here:
 - **There is no download button on your public page.** Visitors read your portfolio on the web; the PDF is yours, for applications and attachments.
 
 Because the PDF is generated from the site itself, it can never be out of date.
+
+**The date and web address across the top** are printed by your browser, not by your site. The page is built to suppress them, but the certain fix is to open **More settings** in the print box and untick **"Headers and footers"**. Your browser remembers it, so it's a one-off — the Print button reminds you the first time.
+
+**Your Tools always print immediately after your skills**, even though they sit in the side rail on screen.
 
 Works on your phone too, via the print option in the share menu.
 

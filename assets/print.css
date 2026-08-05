@@ -89,8 +89,19 @@
   transition: none !important;
 }
 
+/* Zero page margin, with the whitespace moved into the body instead.
+   The date/title/address line is drawn by the BROWSER, not by this page, and
+   no stylesheet can switch it off. But a browser only has somewhere to draw
+   it if the page reserves a margin — so removing the margin removes the
+   header in Chrome and Edge.
+
+   The trade-off: this margin applies to the document, not to each sheet, so
+   on a CV running to a second page the top of that page sits nearer the
+   paper edge. For a one-or-two page resume that is worth a clean header.
+   The guaranteed alternative is the "Headers and footers" tickbox in the
+   browser's own print dialog, which the Print button points at. */
 @page {
-  margin: 15mm 14mm;
+  margin: 0;
 }
 
 html, body {
@@ -101,17 +112,22 @@ html, body {
   line-height: 1.4;
 }
 
+body {
+  padding: 14mm 14mm 16mm !important;
+  margin: 0 !important;
+}
+
 /* --- Strip everything that isn't the resume ----------------------------- */
 
+/* Every editor class is caught by prefix rather than listed by name.
+   The old hand-written list had fallen fourteen classes behind — including
+   .editor-savebar, which is why the "Save & Publish" bar was printing onto
+   page one. A list like that will always drift as panels are added; a
+   prefix rule cannot. */
+[class^='ed-'], [class*=' ed-'],
+[class^='editor-'], [class*=' editor-'],
 .skip-link,
-.editor-bar,
-.editor-panel,
-.editor-toast,
-.editor-banner,
 .minibar,
-.ed-controls,
-.ed-add,
-.ed-chip,
 .lightbox,
 .page-footer,
 .gallery,
@@ -145,9 +161,14 @@ html, body {
   backdrop-filter: none !important;
 }
 
-.page > main { order: 1; }
-.page > .toolrail { order: 2; }
-.page > .page-footer { order: 3; }
+/* display: contents dissolves <main> so its sections become siblings of the
+   rail, which is what lets --print-order interleave them. --print-order is
+   set in app.js and read nowhere but here, so the screen is unaffected. */
+.page > main { display: contents; }
+
+.page > .toolrail,
+.page > main > .section { order: var(--print-order, 900); }
+.page > .page-footer { order: 9999; }
 
 /* Page background photo/gradient must never print. */
 body::before { display: none !important; }
@@ -322,6 +343,17 @@ body::before { display: none !important; }
 .group__name { font-size: 9.5pt; margin-bottom: 1pt; }
 
 .prose p { font-size: 10pt; }
+
+.deflist { display: block !important; max-width: none !important; }
+.deflist__item {
+  font-size: 10pt;
+  margin-bottom: 2pt;
+  padding-left: 10pt;
+  break-inside: avoid;
+}
+.deflist__item::before { top: 5pt; width: 2.5pt; height: 2.5pt; background: #000; }
+.deflist__label { color: #000 !important; }
+.deflist__text { color: #000 !important; }
 
 .file { padding: 0 !important; border: none !important; min-height: 0 !important; }
 .file__icon { display: none !important; }

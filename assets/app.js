@@ -733,6 +733,35 @@
     return listOf(wrap, 'sections.' + sIndex + '.items', 'tool');
   }
 
+  /* ------------------------------------------------------- labelled list */
+
+  // "Systems & Automation — Workflow automation (Zapier), process design…"
+  // A bold label, an em-dash, then the description flowing on the same line.
+  function renderList(section, sIndex) {
+    var wrap = el('ul', { class: 'deflist' });
+    var items = Array.isArray(section.items) ? section.items : [];
+
+    items.forEach(function (item, i) {
+      item = item || {};
+      var base = 'sections.' + sIndex + '.items.' + i;
+      var li = el('li', { class: 'deflist__item', 'data-item': base });
+
+      li.appendChild(editable(el('span', { class: 'deflist__label' }, item.label),
+        base + '.label', 'Label'));
+
+      // A plain text node, not an editable field: the separator belongs to
+      // the design, so it can't be typed over or deleted by accident.
+      li.appendChild(document.createTextNode(' — '));
+
+      li.appendChild(editable(el('span', { class: 'deflist__text' }, item.text),
+        base + '.text', 'Description'));
+
+      wrap.appendChild(li);
+    });
+
+    return listOf(wrap, 'sections.' + sIndex + '.items', 'listitem');
+  }
+
   /* ---------------------------------------------------------------- video */
 
   // Pull a video ID out of whatever YouTube or Vimeo URL was pasted, then
@@ -834,7 +863,8 @@
     gallery: renderGallery,
     files: renderFiles,
     tools: renderTools,
-    video: renderVideo
+    video: renderVideo,
+    list: renderList
   };
 
   function renderSection(section, index) {
@@ -894,10 +924,22 @@
       if (!s) return;
       if (!State.editing && sectionIsEmpty(s)) return;   // empty video section
       var node = renderSection(s, i);
+      // Read only by print.css, so the screen layout is untouched.
+      node.style.setProperty('--print-order', i * 10);
       if (s.type === 'tools' && rail) rail.appendChild(node);
       else main.appendChild(node);
     });
     page.appendChild(main);
+
+    // On paper the Tools rail belongs immediately after the skills section,
+    // not floating at the end. Screen layout is unaffected: the rail keeps
+    // its own column, and this property is never read outside print.css.
+    if (rail) {
+      var skillsAt = -1;
+      sections.forEach(function (s, i) { if (s && s.type === 'groups') skillsAt = i; });
+      rail.style.setProperty('--print-order',
+        skillsAt >= 0 ? (skillsAt * 10 + 5) : (sections.length * 10 + 5));
+    }
 
     // The section list is anchored on .page, not <main>, so that a tools
     // section living in the rail is still found by the editor's controls.

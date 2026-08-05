@@ -59,13 +59,14 @@
     { id: 'gallery',  name: 'Photo gallery' },
     { id: 'files',    name: 'Files to download' },
     { id: 'tools',    name: 'Tools & logos (side rail)' },
-    { id: 'video',    name: 'Introduction video (upload or YouTube link)' }
+    { id: 'video',    name: 'Introduction video (upload or YouTube link)' },
+    { id: 'list',     name: 'Labelled list (Label — description)' }
   ];
 
   var SECTION_TYPE_NAMES = {
     timeline: 'Timeline', cards: 'Cards', groups: 'Skill groups',
     text: 'Paragraphs', gallery: 'Photo gallery', files: 'Files',
-    tools: 'Tools rail', video: 'Video'
+    tools: 'Tools rail', video: 'Video', list: 'Labelled list'
   };
 
   var BG_STYLES = [
@@ -455,7 +456,7 @@
     // "add" inside it made the obvious thing two levels deep.
     bar.appendChild(button('+ Add section', function () { addSection(); }));
     bar.appendChild(button('Reorder sections', openSections));
-    bar.appendChild(button('Print / PDF', function () { window.print(); }));
+    bar.appendChild(button('Print / PDF', doPrint));
     bar.appendChild(button('View as visitor', function () { setPreview(true); }));
 
     bar.appendChild(el('div', { class: 'editor-bar__spacer' }));
@@ -491,6 +492,32 @@
     if (result && result.reason === 'contrast') {
       toast('That accent colour is too low-contrast to read on this design, so the design’s own colour is being used instead. Pick a lighter or darker shade.', 'bad', 8000);
     }
+  }
+
+  // The stylesheet suppresses the browser's date/title header by leaving no
+  // page margin for it to sit in, which works in Chrome and Edge. The
+  // tickbox in the print dialog is the guaranteed route and also keeps
+  // margins on every sheet — so point at it once, at the moment it matters.
+  // A note in the README would never be read while the dialog is open.
+  function doPrint() {
+    var KEY = 'portfolio.printhint';
+    var seen = false;
+    try { seen = localStorage.getItem(KEY) === '1'; } catch (e) { seen = false; }
+
+    if (!seen) {
+      try { localStorage.setItem(KEY, '1'); } catch (e) { /* private mode */ }
+      panel(function (box, close) {
+        box.appendChild(el('h2', {}, 'Before you print'));
+        box.appendChild(el('p', {}, 'In the print box that opens, choose Save as PDF, then open More settings and untick "Headers and footers".'));
+        box.appendChild(el('p', {}, 'That removes the date and web address your browser would otherwise print across the top. Your browser remembers the setting, so this is a one-off.'));
+        actions(box, [{
+          label: 'Got it — open print', primary: true,
+          onClick: function () { close(); setTimeout(function () { window.print(); }, 150); }
+        }, { label: 'Cancel', onClick: close }]);
+      });
+      return;
+    }
+    window.print();
   }
 
   function button(label, onClick, variant) {
@@ -679,7 +706,7 @@
     group: 'Add skill group', bullet: 'Add bullet point', tag: 'Add tag',
     skill: 'Add skill', paragraph: 'Add paragraph', link: 'Add link',
     photo: 'Add photo', file: 'Add file', attachment: 'Attach a file',
-    tool: 'Add tool', video: 'Add video'
+    tool: 'Add tool', video: 'Add video', listitem: 'Add entry'
   };
 
   function blankItem(kind) {
@@ -687,6 +714,7 @@
       case 'timeline': return { role: 'New role', org: '', location: '', start: '', end: '', bullets: [''], attachments: [] };
       case 'card': return { name: 'New project', description: '', tags: [], url: '', image: '', imageAlt: '', attachments: [] };
       case 'group': return { group: 'New group', skills: [''] };
+      case 'listitem': return { label: 'New label', text: '' };
       case 'link': return { label: 'New link', url: '' };
       case 'bullet': case 'tag': case 'skill': case 'paragraph': return '';
       default: return {};
@@ -771,7 +799,7 @@
       wrap.appendChild(down);
     }
 
-    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline' || kind === 'tool' || kind === 'video') {
+    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline' || kind === 'tool' || kind === 'video' || kind === 'listitem') {
       var cog = el('button', { class: 'ed-chip', type: 'button' }, '⚙ Details');
       cog.addEventListener('click', function () { openDetails(listPath + '.' + index, kind); });
       wrap.appendChild(cog);
@@ -1026,7 +1054,7 @@
               items: []
             };
             // Start with one empty item so the section isn't a blank box.
-            var seedKind = { timeline: 'timeline', cards: 'card', groups: 'group', text: 'paragraph' }[kind];
+            var seedKind = { timeline: 'timeline', cards: 'card', groups: 'group', text: 'paragraph', list: 'listitem' }[kind];
             if (kind === 'video') section.items = [];
             if (seedKind) section.items.push(blankItem(seedKind));
             listAt('sections').push(section);
@@ -1080,6 +1108,10 @@
     video: [
       { key: 'caption', label: 'Caption (optional)' },
       { key: 'url', label: 'Video address (YouTube/Vimeo)', placeholder: 'https://…' }
+    ],
+    listitem: [
+      { key: 'label', label: 'Label (shown in bold)' },
+      { key: 'text', label: 'Description', type: 'textarea' }
     ],
     tool: [
       { key: 'name', label: 'Tool name' },

@@ -802,6 +802,36 @@ main { counter-reset: section; }
   cursor: pointer;
 }
 
+/* --- Labelled list ------------------------------------------------------ */
+
+.deflist { display: grid; gap: .7rem; max-width: var(--measure); }
+
+.deflist__item {
+  position: relative;
+  padding-left: 1.15rem;
+  color: var(--text-muted);
+  /* Continuation lines sit under the text, clear of the bullet. */
+  overflow-wrap: break-word;
+}
+
+.deflist__item::before {
+  content: '';
+  position: absolute;
+  left: .3rem;
+  top: .68em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.deflist__label {
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.deflist__text { color: var(--text-muted); }
+
 /* --- Video -------------------------------------------------------------- */
 
 .videos { display: grid; gap: 1.5rem; }
