@@ -572,8 +572,22 @@
     holder.appendChild(row);
   }
 
+  // Read a field's text, ignoring any editor controls that happen to be
+  // inside it. Belt-and-braces: controls are now placed beside editable
+  // elements rather than within them, but reading their labels into someone's
+  // writing is bad enough that it is worth guarding against twice.
+  function readFieldText(node) {
+    if (!node.querySelector('.ed-controls, .ed-inline-controls')) return node.textContent;
+    var clone = node.cloneNode(true);
+    Array.prototype.forEach.call(
+      clone.querySelectorAll('.ed-controls, .ed-inline-controls'),
+      function (n) { n.parentNode.removeChild(n); }
+    );
+    return clone.textContent;
+  }
+
   function refreshEmpty(node) {
-    node.setAttribute('data-empty', node.textContent.trim() === '' ? '1' : '0');
+    node.setAttribute('data-empty', readFieldText(node).trim() === '' ? '1' : '0');
   }
 
   function wireDelegates() {
@@ -583,7 +597,7 @@
       var node = e.target.closest && e.target.closest('[data-path]');
       if (!node || Ed.preview) return;
       var path = node.getAttribute('data-path');
-      var value = node.textContent;
+      var value = readFieldText(node);
       setPath(P.state.content, path, value);
       refreshEmpty(node);
 
@@ -691,6 +705,12 @@
           // Tags, skills and links are inline elements — putting a block of
           // controls inside them would wreck the line. They sit alongside.
           node.parentNode.insertBefore(inlineControls(listPath, kind, index), node.nextSibling);
+        } else if (node.hasAttribute('data-path')) {
+          // The item IS the editable field itself (bullet points, paragraphs).
+          // Controls must sit BESIDE it, never inside: anything inside a
+          // contenteditable element becomes part of its text, so the button
+          // labels ended up saved into the writing.
+          node.parentNode.insertBefore(itemControls(listPath, kind, index, items.length), node.nextSibling);
         } else {
           node.appendChild(itemControls(listPath, kind, index, items.length));
         }
