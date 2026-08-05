@@ -374,99 +374,100 @@ a:hover { text-decoration: none; }
   .masthead__body { flex: 1 1 auto; min-width: 0; }
 }
 
-/* --- Pinned, condensing header ------------------------------------------
-   Only on a screen wide AND tall enough for it to make sense. A phone keeps
-   normal scrolling; a short window can't stick an element taller than the
-   viewport, so it stays in flow there too. */
+/* --- Pinned mini bar ----------------------------------------------------
+   The banner itself is never resized. It scrolls away like any other
+   content, and this slim bar slides in over the top once it has gone.
 
-@media (min-width: 64em) and (min-height: 34rem) {
-  .has-sticky-head { --rail-top: calc(var(--head-condensed-h, 4.5rem) + 1.5rem); }
-  .has-sticky-head .section { --scroll-offset: calc(var(--head-condensed-h, 4.5rem) + 1rem); }
+   That distinction is the entire fix for the scroll glitch: a sticky element
+   keeps its full box in the layout, so shrinking one deletes several hundred
+   pixels of document in a single frame and everything below it jumps. Near
+   the trigger the browser can then clamp the scroll position back across the
+   threshold and the two states fight each other. Being fixed, this bar
+   occupies no layout at all, and it animates on transform alone — nothing to
+   reflow, nothing to jump.
 
-  .has-sticky-head > .masthead {
-    position: sticky;
-    top: var(--sticky-top, 0px);
-    z-index: 30;
-    transition: box-shadow .3s ease, background-color .3s ease;
-  }
+   Only on a screen wide AND tall enough for it to earn its space. */
 
-  /* A transparent header would let content scroll visibly through it. The
-     blur is used rather than a flat --bg because Editorial's paper texture
-     lives on <body>, and a solid panel would cut a rectangle out of it. */
-  .has-sticky-head.is-condensed > .masthead {
-    background: color-mix(in srgb, var(--head-bg, var(--bg)) 88%, transparent);
-    box-shadow: 0 1px 0 var(--border), 0 8px 24px -18px rgba(0, 0, 0, .5);
-  }
-  @supports (backdrop-filter: blur(1px)) {
-    .has-sticky-head.is-condensed > .masthead { backdrop-filter: blur(10px) saturate(1.4); }
-  }
-
-  /* A banner drops its photo/gradient for the flat colour when condensed —
-     a 4.5rem sliver of photograph does not stay legible. */
-  .has-sticky-head.is-condensed > .masthead--banner {
-    background: var(--banner-solid, var(--bg-sunken));
-  }
-  .has-sticky-head.is-condensed > .masthead--photo::before,
-  .has-sticky-head.is-condensed > .masthead--photo::after { opacity: 0; }
-
-  .has-sticky-head > .masthead .masthead__inner {
-    transition: min-height .3s ease, padding .3s ease, gap .3s ease;
-  }
-
-  .has-sticky-head.is-condensed > .masthead .masthead__inner {
-    min-height: var(--head-condensed-h, 4.5rem);
-    padding-top: .5rem;
-    padding-bottom: .5rem;
-    gap: .9rem;
-    flex-direction: row !important;
-    align-items: center;
-    border-bottom: 0;
-    text-align: left;
-  }
-
-  .has-sticky-head.is-condensed .masthead__body {
-    display: flex;
-    align-items: baseline;
-    gap: .75rem;
-  }
-
-  .has-sticky-head.is-condensed .avatar {
-    width: 40px;
-    height: 40px;
-    transition: width .3s ease, height .3s ease;
-  }
-
-  .has-sticky-head.is-condensed .masthead__name {
-    font-size: 1.15rem;
-    letter-spacing: 0;
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
-  .has-sticky-head.is-condensed .masthead__name::after { display: none; }
-
-  .has-sticky-head.is-condensed .masthead__headline {
-    font-size: .88rem;
-    white-space: nowrap;
-  }
-  .has-sticky-head.is-condensed .masthead__headline::before {
-    content: '·';
-    margin-right: .75rem;
-    opacity: .5;
-  }
-
-  /* Everything else folds away. */
-  .has-sticky-head.is-condensed .masthead__location,
-  .has-sticky-head.is-condensed .masthead__summary,
-  .has-sticky-head.is-condensed .contact,
-  .has-sticky-head.is-condensed .ed-avatar-holder .ed-controls {
-    display: none;
-  }
+.minibar {
+  position: fixed;
+  top: var(--sticky-top, 0px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: none;
+  background: color-mix(in srgb, var(--head-bg, var(--bg)) 90%, transparent);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 8px 24px -20px rgba(0, 0, 0, .55);
+  transform: translateY(-101%);
+  transition: transform .28s cubic-bezier(.2, .7, .3, 1);
+  will-change: transform;
 }
 
+@supports (backdrop-filter: blur(1px)) {
+  .minibar { backdrop-filter: blur(10px) saturate(1.4); }
+}
+
+@media (min-width: 64em) and (min-height: 34rem) {
+  .minibar { display: block; }
+  .has-sticky-head { --rail-top: calc(var(--head-condensed-h, 4.5rem) + 1.5rem); }
+  .has-sticky-head .section { --scroll-offset: calc(var(--head-condensed-h, 4.5rem) + 1rem); }
+}
+
+.has-sticky-head.is-condensed .minibar { transform: translateY(0); }
+
+.minibar__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: .6rem var(--gutter);
+  min-height: var(--head-condensed-h, 4.5rem);
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+}
+
+.minibar__avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--accent-soft);
+  display: grid;
+  place-items: center;
+}
+.minibar__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.minibar__avatar--initials {
+  font-family: var(--font-display);
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.minibar__name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 0 auto;
+}
+
+.minibar__headline {
+  font-family: var(--font-meta);
+  font-size: .86rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.minibar__headline::before { content: '·'; margin-right: .8rem; opacity: .5; }
+
 @media (prefers-reduced-motion: reduce) {
-  .has-sticky-head > .masthead,
-  .has-sticky-head > .masthead .masthead__inner,
-  .has-sticky-head .avatar { transition: none; }
+  .minibar { transition: none; }
 }
 
 #app { position: relative; }

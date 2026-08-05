@@ -108,6 +108,7 @@ html, body {
 .editor-panel,
 .editor-toast,
 .editor-banner,
+.minibar,
 .ed-controls,
 .ed-add,
 .ed-chip,
@@ -209,16 +210,6 @@ html, body {
   text-align: center !important;
 }
 .masthead__inner::after { display: none !important; }
-
-/* Undo the condensed state, whatever the screen happened to be showing. */
-.is-condensed .masthead__location,
-.is-condensed .masthead__summary { display: block !important; }
-.is-condensed .contact { display: flex !important; }
-.is-condensed .masthead__headline::before { content: none !important; }
-.is-condensed .masthead__name {
-  font-size: 22pt !important;
-  white-space: normal !important;
-}
 
 .avatar { display: none !important; }   /* photos are not standard on a printed CV */
 

@@ -797,6 +797,34 @@
   // IntersectionObserver is unavailable, nothing pins and the page scrolls
   // normally — the failure mode must never be a tall banner welded to the
   // top of the screen with no way to shrink it.
+  // The slim bar that slides in once the banner has scrolled away. It is a
+  // visual duplicate of the name and title, so it is hidden from screen
+  // readers — the real masthead above is what they read.
+  function buildMiniBar(root) {
+    var p = State.content.profile || {};
+    var old = root.querySelector('.minibar');
+    if (old) old.remove();
+
+    var bar = el('div', { class: 'minibar', 'aria-hidden': 'true' });
+    var inner = el('div', { class: 'minibar__inner' });
+
+    var photo = safeUrl(p.photo);
+    if (photo) {
+      var wrap = el('span', { class: 'minibar__avatar' });
+      wrap.appendChild(el('img', { src: photo, alt: '', width: '36', height: '36' }));
+      inner.appendChild(wrap);
+    } else {
+      inner.appendChild(el('span', { class: 'minibar__avatar minibar__avatar--initials' }, initialsOf(p.name)));
+    }
+
+    inner.appendChild(el('span', { class: 'minibar__name' }, p.name));
+    if (has(p.headline)) inner.appendChild(el('span', { class: 'minibar__headline' }, p.headline));
+
+    bar.appendChild(inner);
+    root.appendChild(bar);
+    return bar;
+  }
+
   var condenseState = { onScroll: null, onResize: null };
 
   function setupCondense(root) {
@@ -809,6 +837,18 @@
 
     var head = root.querySelector('.masthead');
     if (!head) return;
+
+    // A separate slim bar, fixed and therefore OUT OF THE FLOW, rather than
+    // shrinking the banner itself.
+    //
+    // Shrinking a sticky header is what caused the scroll glitch: a sticky
+    // element still occupies its full box in the flow, so collapsing it from
+    // ~500px to ~72px removes 400-odd pixels of document in a single frame
+    // and everything below jumps. Near the trigger point the browser can then
+    // clamp the scroll position back across the threshold and the two states
+    // fight each other. A fixed overlay changes no layout at all, and it
+    // animates on transform alone, so there is nothing to reflow.
+    var mini = buildMiniBar(root);
 
     // A passive, frame-throttled scroll listener rather than an
     // IntersectionObserver on a sentinel.
@@ -824,9 +864,9 @@
     var threshold = 120;
 
     function measureThreshold() {
-      // Never measure while condensed: that would read the shrunken height
-      // and drag the trigger down to nothing, sticking it permanently.
-      if (root.classList.contains('is-condensed')) return;
+      // The banner's height is now constant — it is never resized — so this
+      // can be measured at any time without the old "don't measure while
+      // condensed" trap.
       threshold = Math.max(80, head.offsetHeight - 96);
     }
     measureThreshold();

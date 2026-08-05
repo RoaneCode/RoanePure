@@ -165,9 +165,7 @@ body.ed-preview .reveal {
 /* Pinning is off while editing — a banner that shrinks and hides fields as
    you scroll cannot be edited. It comes back in visitor view, offset below
    the preview banner so it parks under it rather than behind it. */
-body.ed-on #app > .masthead {
-  position: static !important;
-}
+body.ed-on .minibar { display: none !important; }
 body.ed-preview #app { --sticky-top: 44px; }
 
 /* The drop capital fights with a text cursor, so it is stood down while
