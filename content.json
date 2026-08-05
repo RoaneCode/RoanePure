@@ -58,7 +58,7 @@
   "sections": [
     {
       "id": "experience",
-      "title": "Experience",
+      "title": "Work Experience",
       "type": "timeline",
       "items": [
         {
@@ -92,14 +92,16 @@
           "attachments": []
         },
         {
-          "role": "Operations Coordinator",
-          "org": "Bellway Supply Co.",
-          "location": "Leeds",
-          "start": "2016",
-          "end": "2018",
+          "role": "Videographer & Video Editor",
+          "org": "Department of Education",
+          "location": "Laoag City",
+          "start": "2021",
+          "end": "2022",
           "bullets": [
-            "Coordinated inbound scheduling for four regional depots.",
-            "Cut stock discrepancies by 62% by introducing a simple daily reconciliation check."
+            "Produced educational video content for online classes, shooting and editing 30+ minute instructional sessions end to end.↑↓🗑 Delete",
+            "Delivered finished content for distribution across local television, YouTube, and Facebook Live↑↓🗑 Delete",
+            "Directed studio shoots using green screen setups and managed on-location production as needed.↑↓🗑 Delete",
+            "Handled full post-production independently — editing, keying, and final delivery for broadcast-ready output↑↓🗑 Delete"
           ],
           "attachments": []
         }
