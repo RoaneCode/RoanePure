@@ -59,7 +59,7 @@
     { id: 'gallery',  name: 'Photo gallery' },
     { id: 'files',    name: 'Files to download' },
     { id: 'tools',    name: 'Tools & logos (side rail)' },
-    { id: 'video',    name: 'Introduction video' }
+    { id: 'video',    name: 'Introduction video (upload or YouTube link)' }
   ];
 
   var SECTION_TYPE_NAMES = {
@@ -450,7 +450,11 @@
     bar.appendChild(button('Banner', openBanner));
     bar.appendChild(button('Designs', openDesigns));
     bar.appendChild(button('Site details', openSiteDetails));
-    bar.appendChild(button('Sections', openSections));
+    // Adding a section is the commonest structural action, so it keeps its
+    // own button. "Sections" is for reordering what already exists — burying
+    // "add" inside it made the obvious thing two levels deep.
+    bar.appendChild(button('+ Add section', function () { addSection(); }));
+    bar.appendChild(button('Reorder sections', openSections));
     bar.appendChild(button('Print / PDF', function () { window.print(); }));
     bar.appendChild(button('View as visitor', function () { setPreview(true); }));
 
@@ -1488,8 +1492,8 @@
       }
 
       actions(box, [
-        { label: 'Done', primary: true, onClick: function () { close(); P.render(); } },
-        { label: 'Add a section', onClick: function () { close(); addSection(); } }
+        { label: '+ Add a section', primary: true, onClick: function () { close(); addSection(); } },
+        { label: 'Done', onClick: function () { close(); P.render(); } }
       ]);
     });
   }
