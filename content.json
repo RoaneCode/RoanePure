@@ -169,26 +169,55 @@
     },
     {
       "id": "skills",
-      "title": "Skills",
+      "title": "Other Skills",
       "type": "groups",
       "items": [
         {
           "group": "Operations",
           "skills": [
             "Process mapping",
-            "Capacity planning",
-            "Budget ownership",
-            "Vendor management",
-            "Continuous improvement"
+            "Process Improvement",
+            "Workflow Optimization",
+            "SOP Development",
+            "Records Management",
+            "Compliance and Documentation"
           ]
         },
         {
           "group": "Leadership",
           "skills": [
-            "Team leadership",
-            "Coaching",
-            "Change management",
-            "Board reporting"
+            "Team Coordination",
+            "Knowledge Transfer",
+            "Mentoring",
+            "Conflict Resolution",
+            "Cross-functional Collaboration"
+          ]
+        },
+        {
+          "group": "Project Management",
+          "skills": [
+            "Technical Support & Troubleshooting",
+            "Timeline & Deadline Management",
+            "Task Prioritization"
+          ]
+        },
+        {
+          "group": "Analitical",
+          "skills": [
+            "Problem Solving",
+            "Root Cause Analysis",
+            "System Thinking",
+            "Continuous Improvement"
+          ]
+        },
+        {
+          "group": "WOrk Style",
+          "skills": [
+            "Self-directed",
+            "Adaptability",
+            "Initiative",
+            "Reliability",
+            "Collaboration"
           ]
         }
       ]
@@ -199,13 +228,24 @@
       "type": "timeline",
       "items": [
         {
-          "role": "BSc Business Management, 2:1",
-          "org": "University of Leeds",
-          "location": "Leeds",
-          "start": "2013",
-          "end": "2016",
+          "role": "Software Development",
+          "org": "Brigham Young University - Pathway",
+          "location": "Idaho, USA",
+          "start": "2022",
+          "end": "2024",
           "bullets": [
-            "Dissertation on lean methodology in small-scale distribution."
+            "Completed 2 years, ladderized program."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Social Work",
+          "org": "Brigham Young University",
+          "location": "Hawaii, USA",
+          "start": "2017",
+          "end": "2020",
+          "bullets": [
+            "Completed 3 years"
           ],
           "attachments": []
         }
