@@ -2,7 +2,7 @@
   "meta": {
     "siteTitle": "Roane Purificacion — Data & Systems Specialist",
     "description": "Operations manager with nine years turning messy processes into systems that hold up under pressure.",
-    "theme": "editorial",
+    "theme": "custom",
     "accentColor": "#1f4d6b",
     "designs": [
       {
@@ -34,6 +34,11 @@
       "pageBg": "#fbfaf7",
       "pageText": "#14110e",
       "heading": "#14110e"
+    },
+    "background": {
+      "style": "gradient",
+      "color": "#fbfaf7",
+      "color2": "#fff6c7"
     }
   },
   "profile": {
