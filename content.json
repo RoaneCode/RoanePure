@@ -50,16 +50,7 @@
     "phone": "+63 961 263 0912",
     "photo": "uploads/roane-0xik.jpg",
     "summary": "Data and Systems Specialist with 6+ years working in data and systems — 2 professionally, 4+ through self-driven projects — within 5 years in media production. I manage 2–3 million files a year and maintain 100+ automated workflows, turning scattered manual processes into structured systems that run on their own. My production background, shooting and editing broadcast content end to end, is why I build around how work actually gets done.",
-    "links": [
-      {
-        "label": "LinkedIn",
-        "url": "https://www.linkedin.com/in/example"
-      },
-      {
-        "label": "Facebook",
-        "url": "mailto:alex.morgan@example.com"
-      }
-    ]
+    "links": []
   },
   "sections": [
     {
@@ -269,6 +260,104 @@
             "Completed 3 years"
           ],
           "attachments": []
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "title": "Tools",
+      "type": "tools",
+      "items": [
+        {
+          "name": "Claude",
+          "icon": "claude",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Zapier",
+          "icon": "zapier",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Google Apps Script",
+          "icon": "googleappsscript",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "GitHub",
+          "icon": "github",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Canva",
+          "icon": "canva",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "JotForm",
+          "icon": "",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Google Sheets",
+          "icon": "googlesheets",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Google Docs",
+          "icon": "googledocs",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Google Drive",
+          "icon": "googledrive",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Synology",
+          "icon": "synology",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Dropbox",
+          "icon": "dropbox",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Slack",
+          "icon": "slack",
+          "logo": "",
+          "color": "",
+          "url": ""
+        },
+        {
+          "name": "Gmail",
+          "icon": "gmail",
+          "logo": "",
+          "color": "",
+          "url": ""
         }
       ]
     }
