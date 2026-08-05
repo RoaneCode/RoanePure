@@ -32,8 +32,24 @@
     { id: 'editorial', name: 'Editorial (artistic)' },
     { id: 'minimal',   name: 'Clean & minimal' },
     { id: 'bold',      name: 'Bold & modern' },
-    { id: 'dark',      name: 'Dark & technical' }
+    { id: 'dark',      name: 'Dark & technical' },
+    { id: 'custom',    name: 'Custom (your own)' }
   ];
+
+  var BANNER_STYLES = [
+    { id: 'none',     name: 'No banner (plain intro)' },
+    { id: 'solid',    name: 'Solid colour' },
+    { id: 'gradient', name: 'Colour gradient' },
+    { id: 'photo',    name: 'Photograph' }
+  ];
+
+  var BANNER_HEIGHTS = [
+    { id: 'short',  name: 'Short' },
+    { id: 'medium', name: 'Medium' },
+    { id: 'tall',   name: 'Tall' }
+  ];
+
+  var MAX_DESIGNS = 12;
 
   var SECTION_TYPES = [
     { id: 'timeline', name: 'Timeline (jobs, education)' },
@@ -411,23 +427,9 @@
     });
     bar.appendChild(themeSel);
 
-    // Accent colour
-    var colour = el('input', {
-      type: 'color', class: 'ed-color', 'aria-label': 'Accent colour',
-      value: (P.state.content.meta && P.state.content.meta.accentColor) || '#1f4d6b'
-    });
-    colour.addEventListener('input', function () {
-      if (!P.state.content.meta) P.state.content.meta = {};
-      P.state.content.meta.accentColor = colour.value;
-      P.applyAccent(colour.value);
-      markDirty();
-    });
-    colour.addEventListener('change', function () {
-      warnIfUnreadable(colour.value);
-      markDirty();
-    });
-    bar.appendChild(colour);
-
+    bar.appendChild(button('Colours', openColours));
+    bar.appendChild(button('Banner', openBanner));
+    bar.appendChild(button('Designs', openDesigns));
     bar.appendChild(button('Site details', openSiteDetails));
     bar.appendChild(button('Add section', function () { addSection(); }));
     bar.appendChild(button('Print / PDF', function () { window.print(); }));
@@ -1015,6 +1017,317 @@
           }
         },
         { label: 'Cancel', onClick: close }
+      ]);
+    });
+  }
+
+  /* --------------------------------------------------- colours and banner */
+
+  function meta() {
+    if (!P.state.content.meta) P.state.content.meta = {};
+    return P.state.content.meta;
+  }
+
+  // Touching any colour or banner control moves you onto the Custom design,
+  // seeded from whatever theme you were looking at. The five built-in themes
+  // therefore stay pristine — picking Editorial again always gives you
+  // Editorial, not a half-edited version of it.
+  function switchToCustom() {
+    var m = meta();
+    if (m.theme === 'custom') return;
+
+    // Copy the current theme's computed colours across first, so the moment
+    // of switching is invisible.
+    var s = getComputedStyle(document.documentElement);
+    m.palette = m.palette || {};
+    if (!has(m.palette.pageBg)) m.palette.pageBg = rgbToHex(s.getPropertyValue('--bg'));
+    if (!has(m.palette.pageText)) m.palette.pageText = rgbToHex(s.getPropertyValue('--text'));
+    if (!has(m.palette.heading)) m.palette.heading = rgbToHex(s.getPropertyValue('--heading'));
+    if (!has(m.accentColor)) m.accentColor = rgbToHex(s.getPropertyValue('--accent'));
+
+    m.theme = 'custom';
+    var sel = document.querySelector('.ed-select');
+    if (sel) sel.value = 'custom';
+  }
+
+  // <input type="color"> only accepts #rrggbb, but computed styles come back
+  // as rgb(). Convert, and fall back to something sane rather than blank.
+  function rgbToHex(value) {
+    var v = String(value || '').trim();
+    if (/^#[0-9a-f]{6}$/i.test(v)) return v.toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(v)) {
+      return '#' + v.slice(1).split('').map(function (c) { return c + c; }).join('');
+    }
+    var m = v.match(/^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i);
+    if (!m) return '#000000';
+    return '#' + [m[1], m[2], m[3]].map(function (n) {
+      return ('0' + Math.round(Number(n)).toString(16)).slice(-2);
+    }).join('');
+  }
+
+  // A colour row: swatch, hex readout, and a reset back to the theme.
+  function colourRow(box, label, get, set, onChange) {
+    var wrap = el('div', { class: 'ed-colourrow' });
+    wrap.appendChild(el('span', { class: 'ed-colourrow__label' }, label));
+
+    var input = el('input', { type: 'color', class: 'ed-colourrow__swatch' });
+    input.value = rgbToHex(get() || '#000000');
+    input.addEventListener('input', function () { set(input.value); onChange(); });
+    wrap.appendChild(input);
+
+    var reset = el('button', { class: 'ed-chip', type: 'button' }, 'Use theme');
+    reset.addEventListener('click', function () {
+      set('');
+      onChange();
+      input.value = rgbToHex(getComputedStyle(document.documentElement)
+        .getPropertyValue(label.indexOf('Background') > -1 ? '--bg'
+          : label.indexOf('Heading') > -1 ? '--heading'
+          : label.indexOf('Links') > -1 ? '--accent' : '--text'));
+    });
+    wrap.appendChild(reset);
+
+    box.appendChild(wrap);
+    return input;
+  }
+
+  function openColours() {
+    var m = meta();
+    m.palette = m.palette || {};
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Page colours'));
+      box.appendChild(el('p', {}, 'Changing any of these switches you to your own Custom design. The five built-in themes stay exactly as they are, so you can always go back to one.'));
+
+      var readout = el('div', { class: 'editor-panel__note' });
+
+      function refresh() {
+        switchToCustom();
+        P.applyMeta(P.state.content);
+        markDirty();
+
+        var s = getComputedStyle(document.documentElement);
+        var ratio = P.contrastRatio(rgbToHex(s.getPropertyValue('--text')), rgbToHex(s.getPropertyValue('--bg')));
+        readout.textContent = '';
+        readout.className = 'editor-panel__note';
+        if (ratio === null) return;
+        var r = Math.round(ratio * 10) / 10;
+        if (ratio >= 4.5) {
+          readout.textContent = 'Contrast ' + r + ':1 — good, comfortable to read.';
+          readout.style.background = '#f0fdf4';
+          readout.style.borderColor = '#bbf7d0';
+          readout.style.color = '#14532d';
+        } else if (ratio >= 3) {
+          readout.textContent = 'Contrast ' + r + ':1 — readable for big text, tiring for body text. 4.5:1 is the usual target.';
+          readout.style.cssText = '';
+        } else {
+          readout.className = 'editor-panel__note editor-panel__note--bad';
+          readout.textContent = 'Contrast ' + r + ':1 — hard to read. Many visitors will struggle with this. Aim for 4.5:1 or higher.';
+          readout.style.cssText = '';
+        }
+      }
+
+      colourRow(box, 'Page background', function () { return m.palette.pageBg; },
+        function (v) { m.palette.pageBg = v; }, refresh);
+      colourRow(box, 'Body text', function () { return m.palette.pageText; },
+        function (v) { m.palette.pageText = v; }, refresh);
+      colourRow(box, 'Headings', function () { return m.palette.heading; },
+        function (v) { m.palette.heading = v; }, refresh);
+      colourRow(box, 'Links & accents', function () { return m.accentColor; },
+        function (v) { m.accentColor = v; }, refresh);
+
+      box.appendChild(readout);
+      refresh();
+
+      actions(box, [
+        { label: 'Done', primary: true, onClick: function () { close(); P.render(); } },
+        {
+          label: 'Reset all to theme', onClick: function () {
+            m.palette = { pageBg: '', pageText: '', heading: '' };
+            P.applyMeta(P.state.content);
+            markDirty();
+            close();
+            P.render();
+          }
+        }
+      ]);
+    });
+  }
+
+  function openBanner() {
+    var m = meta();
+    m.banner = m.banner || { style: 'none' };
+    var b = m.banner;
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Intro banner'));
+
+      var style = field(box, 'Banner style', b.style || 'none', { type: 'select', options: BANNER_STYLES });
+      var extra = el('div', {});
+      box.appendChild(extra);
+
+      function apply() {
+        switchToCustom();
+        P.render();
+        markDirty();
+      }
+
+      function paint() {
+        extra.textContent = '';
+        var s = style.value;
+        b.style = s;
+        if (s === 'none') { apply(); return; }
+
+        colourRow(extra, s === 'gradient' ? 'Gradient start' : 'Background colour',
+          function () { return b.color || '#1f4d6b'; },
+          function (v) { b.color = v; }, apply);
+
+        if (s === 'gradient') {
+          colourRow(extra, 'Gradient end', function () { return b.color2 || '#0f2f33'; },
+            function (v) { b.color2 = v; }, apply);
+          var angle = field(extra, 'Gradient angle (degrees)', String(b.angle === undefined ? 160 : b.angle));
+          angle.type = 'number';
+          angle.addEventListener('input', function () { b.angle = Number(angle.value) || 0; apply(); });
+        }
+
+        if (s === 'photo') {
+          var up = el('button', { class: 'ed-btn', type: 'button', style: 'width:100%;justify-content:center;margin-bottom:.8rem' },
+            b.image ? 'Replace background photo' : 'Upload background photo');
+          up.addEventListener('click', function () { close(); uploadBannerPhoto(); });
+          extra.appendChild(up);
+          extra.appendChild(el('p', { style: 'font-size:.82rem;margin-top:-.4rem' },
+            'A dark wash is always laid over the photo so your name stays readable — that part is not optional, because no colour choice can rescue text on an arbitrary photograph.'));
+          var focal = field(extra, 'Focus point', b.focal || 'center', {
+            type: 'select', options: [
+              { id: 'center', name: 'Centre' }, { id: 'top', name: 'Top' },
+              { id: 'bottom', name: 'Bottom' }, { id: 'left', name: 'Left' }, { id: 'right', name: 'Right' }
+            ]
+          });
+          focal.addEventListener('change', function () { b.focal = focal.value; apply(); });
+        }
+
+        var height = field(extra, 'Height', b.height || 'medium', { type: 'select', options: BANNER_HEIGHTS });
+        height.addEventListener('change', function () { b.height = height.value; apply(); });
+
+        var align = field(extra, 'Alignment', b.align || 'left', {
+          type: 'select', options: [{ id: 'left', name: 'Left' }, { id: 'center', name: 'Centred' }]
+        });
+        align.addEventListener('change', function () { b.align = align.value; apply(); });
+
+        colourRow(extra, 'Banner text colour', function () { return b.textColor; },
+          function (v) { b.textColor = v; }, apply);
+        extra.appendChild(el('p', { style: 'font-size:.82rem;margin-top:-.4rem' },
+          'Leave this on the theme setting and black or white is chosen automatically, whichever reads better on your background.'));
+
+        apply();
+      }
+
+      style.addEventListener('change', paint);
+      paint();
+
+      actions(box, [{ label: 'Done', primary: true, onClick: function () { close(); P.render(); } }]);
+    });
+  }
+
+  function uploadBannerPhoto() {
+    if (!Ed.ready) { toast('Unlock editing first — uploads are saved straight to GitHub.', 'bad'); openUnlock(); return; }
+    fileInput('image/jpeg,image/png,image/webp', false, function (files) {
+      // Wider than an avatar, because this stretches the full width of a screen.
+      runUploads(files, 2000, function (results) {
+        if (!results.length) return;
+        var m = meta();
+        m.banner = m.banner || {};
+        m.banner.style = 'photo';
+        m.banner.image = results[0].path;
+        switchToCustom();
+        markDirty();
+        P.render();
+        toast('Background photo set.', 'ok');
+      });
+    });
+  }
+
+  /* ------------------------------------------------------- saved designs */
+
+  function openDesigns() {
+    var m = meta();
+    var list = Array.isArray(m.designs) ? m.designs : (m.designs = []);
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Saved designs'));
+      box.appendChild(el('p', {}, 'Save how your page looks right now, and come back to it whenever you like. Only the look is saved — never your words, so applying one can never lose your writing.'));
+
+      if (!list.length) {
+        box.appendChild(el('div', { class: 'editor-panel__note' }, 'You have not saved any designs yet.'));
+      }
+
+      list.forEach(function (d, i) {
+        var row = el('div', { class: 'ed-designrow' });
+        var name = el('span', { class: 'ed-designrow__name' }, d.name || 'Untitled');
+        row.appendChild(name);
+        row.appendChild(el('span', { class: 'ed-designrow__meta' }, (d.theme || 'classic') + (d.savedAt ? ' · ' + d.savedAt : '')));
+
+        var apply = el('button', { class: 'ed-chip', type: 'button' }, 'Apply');
+        apply.addEventListener('click', function () {
+          m.theme = d.theme || 'classic';
+          m.accentColor = d.accentColor || '';
+          m.palette = JSON.parse(JSON.stringify(d.palette || {}));
+          m.banner = JSON.parse(JSON.stringify(d.banner || { style: 'none' }));
+          markDirty();
+          close();
+          P.render();
+          buildBar();
+          toast('“' + (d.name || 'Design') + '” applied. Press Save & Publish to make it live.', 'ok');
+        });
+        row.appendChild(apply);
+
+        var ren = el('button', { class: 'ed-chip', type: 'button' }, 'Rename');
+        ren.addEventListener('click', function () {
+          var v = window.prompt('New name for this design:', d.name || '');
+          if (v === null) return;
+          d.name = v.trim() || d.name;
+          markDirty();
+          close();
+          openDesigns();
+        });
+        row.appendChild(ren);
+
+        var del = el('button', { class: 'ed-chip ed-chip--danger', type: 'button' }, 'Delete');
+        del.addEventListener('click', function () {
+          if (!window.confirm('Delete the saved design “' + (d.name || 'Untitled') + '”? Your page keeps its current look.')) return;
+          list.splice(i, 1);
+          markDirty();
+          close();
+          openDesigns();
+        });
+        row.appendChild(del);
+
+        box.appendChild(row);
+      });
+
+      actions(box, [
+        {
+          label: 'Save current design', primary: true, onClick: function () {
+            if (list.length >= MAX_DESIGNS) {
+              toast('You already have ' + MAX_DESIGNS + ' saved designs — delete one first.', 'bad', 6000);
+              return;
+            }
+            var name = window.prompt('Name this design:', 'Design ' + (list.length + 1));
+            if (name === null) return;
+            list.push({
+              id: 'd' + Date.now().toString(36),
+              name: name.trim() || ('Design ' + (list.length + 1)),
+              savedAt: new Date().toISOString().slice(0, 10),
+              theme: m.theme || 'classic',
+              accentColor: m.accentColor || '',
+              palette: JSON.parse(JSON.stringify(m.palette || {})),
+              banner: JSON.parse(JSON.stringify(m.banner || { style: 'none' }))
+            });
+            markDirty();
+            close();
+            openDesigns();
+          }
+        },
+        { label: 'Close', onClick: close }
       ]);
     });
   }

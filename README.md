@@ -144,7 +144,7 @@ Neither appears anywhere on the page itself.
 
 Press **+ Add tool** and either pick a logo from the built-in set (search by name), upload your own image, or add it with no logo at all. Anything without a logo gets a two-letter tile in the same style, so it still looks like part of the set rather than a gap.
 
-The logos sit quietly in one colour and bloom into their real brand colour when someone hovers over them. On a phone there is no hover, so they simply stay in the calm version.
+The logos show in their real brand colours, softened slightly so they sit under your text rather than competing with it, and come up to full strength when someone hovers over them. On a phone there is no hover, so they simply stay in the softened version — which is why it's designed to look finished on its own.
 
 Around 30 logos are built in — including Google Sheets, Zapier, Claude, Apps Script, Slack, Dropbox and Synology. Some brands (JotForm, Visual Studio, Dubsado) aren't in the open-source set, so upload their logo or leave the lettermark.
 
@@ -168,13 +168,42 @@ Pick from the **design dropdown** in the toolbar. It changes instantly so you ca
 
 | Design | Best for |
 |---|---|
+| **Custom** | Your own colours and banner — see below. |
 | **Classic professional** | Finance, law, academia, corporate, operations. The default. |
 | **Editorial** | When you want presence without losing formality. Magazine typesetting — numbered sections, an opening drop capital, warm paper. Still entirely appropriate for a serious application. |
 | **Clean & minimal** | Almost anything. Calm and modern. |
 | **Bold & modern** | Design, marketing, creative roles. |
 | **Dark & technical** | Engineering, data, technical roles. |
 
-The colour square next to it sets your accent colour.
+### Your own colours
+
+**Colours** in the toolbar gives you four controls: page background, body text, headings, and links & accents. Each has a **Use theme** button to put it back.
+
+Touching any of them moves you onto the **Custom** design, copying across whatever theme you were looking at so nothing jumps. That means the five built-in themes stay untouched — picking Editorial again always gives you Editorial, never a half-edited version.
+
+A **contrast reading** updates as you choose. Above 4.5:1 is comfortable; below 3:1 many people will struggle. It warns you but never stops you — it's your site.
+
+### The intro banner
+
+**Banner** turns your introduction into a full-width band. It can be:
+
+- a **solid colour**
+- a **gradient** between two colours, at any angle
+- a **photograph** you upload
+
+Set its height, align it left or centred, and choose the text colour — or leave that alone and black or white is picked automatically, whichever reads better.
+
+**Photographs always get a dark wash laid over them.** That isn't adjustable, and it's the one place the site overrides your choice: no colour setting can rescue text sitting on an arbitrary photo, so the wash guarantees your name stays readable whatever the image.
+
+On a computer the banner **pins to the top and shrinks** into a slim bar as you scroll, keeping your name on screen. On a phone nothing is frozen — everything scrolls normally, so your content keeps the whole screen. It also stays put while you're editing, since a header that shrinks and hides fields would be impossible to work with.
+
+### Saving a design
+
+**Designs** saves how your page looks right now under a name you choose, and lets you apply it again any time. Save up to 12.
+
+Only the *look* is saved — colours, banner, theme. Never your words. Applying a saved design can't lose your writing.
+
+Designs are stored with your site, so one saved on your laptop is there on your phone.
 
 If you pick a colour too faint to read against that design's background, the site keeps the design's own colour and tells you why. That's deliberate — it stops your headings becoming invisible to visitors.
 

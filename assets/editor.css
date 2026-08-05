@@ -162,6 +162,14 @@ body.ed-preview .reveal {
   transition: none !important;
 }
 
+/* Pinning is off while editing — a banner that shrinks and hides fields as
+   you scroll cannot be edited. It comes back in visitor view, offset below
+   the preview banner so it parks under it rather than behind it. */
+body.ed-on #app > .masthead {
+  position: static !important;
+}
+body.ed-preview #app { --sticky-top: 44px; }
+
 /* The drop capital fights with a text cursor, so it is stood down while
    the intro paragraph is being edited. It returns in visitor view. */
 body.ed-on .masthead__summary::first-letter {
@@ -391,6 +399,59 @@ body.ed-on [data-item] {
   background: #fef2f2;
   border-color: #fecaca;
   color: #7f1d1d;
+}
+
+/* ------------------------------------------------------ colours & designs */
+
+.ed-colourrow {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.ed-colourrow__label {
+  flex: 1 1 auto;
+  font-weight: 600;
+  font-size: .88rem;
+  min-width: 0;
+}
+
+.ed-colourrow__swatch {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 34px;
+  padding: 2px;
+  border: 1px solid var(--ed-line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ed-designrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .4rem;
+  padding: .6rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.ed-designrow__name {
+  flex: 1 1 8rem;
+  font-weight: 600;
+  font-size: .9rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ed-designrow__meta {
+  flex: 0 0 auto;
+  width: 100%;
+  font-size: .76rem;
+  color: #6b7280;
+  order: 3;
 }
 
 /* ------------------------------------------------------------ tool picker */

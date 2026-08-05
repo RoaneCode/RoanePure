@@ -179,7 +179,57 @@
 
     var theme = meta.theme || 'classic';
     document.documentElement.setAttribute('data-theme', theme);
+    applyPalette(meta.palette);
     applyAccent(meta.accentColor);
+  }
+
+  // Your own colours, layered over whichever theme is active. Each is
+  // optional — blank means "leave the theme alone".
+  //
+  // The fiddly part is the DERIVED shades. Overriding --text alone would
+  // leave --text-muted and --text-faint at the theme's values, which may no
+  // longer suit; same for the card and tile surfaces under a custom
+  // background. So when a colour is set, its relatives are mixed from it.
+  function applyPalette(palette) {
+    var root = document.documentElement;
+    var derived = [
+      '--text-muted', '--text-faint', '--heading',
+      '--bg-sunken', '--bg-raised', '--border'
+    ];
+    ['--bg', '--text'].concat(derived).forEach(function (prop) {
+      root.style.removeProperty(prop);
+    });
+
+    palette = palette || {};
+
+    if (has(palette.pageBg)) {
+      root.style.setProperty('--bg', palette.pageBg);
+      root.style.setProperty('--bg-sunken', 'color-mix(in srgb, ' + palette.pageBg + ' 94%, ' + contrastPole(palette.pageBg) + ')');
+      root.style.setProperty('--bg-raised', 'color-mix(in srgb, ' + palette.pageBg + ' 97%, ' + oppositePole(palette.pageBg) + ')');
+      root.style.setProperty('--border', 'color-mix(in srgb, ' + palette.pageBg + ' 82%, ' + contrastPole(palette.pageBg) + ')');
+    }
+
+    if (has(palette.pageText)) {
+      root.style.setProperty('--text', palette.pageText);
+      root.style.setProperty('--text-muted', 'color-mix(in srgb, ' + palette.pageText + ' 78%, transparent)');
+      root.style.setProperty('--text-faint', 'color-mix(in srgb, ' + palette.pageText + ' 58%, transparent)');
+    }
+
+    // Headings default to the body text colour, so this only needs setting
+    // when it is deliberately different.
+    if (has(palette.heading)) root.style.setProperty('--heading', palette.heading);
+  }
+
+  // Which way to nudge a colour to create a neighbouring surface: dark
+  // backgrounds get lighter surfaces, light backgrounds get darker ones.
+  function contrastPole(colour) {
+    var rgb = parseColor(colour);
+    if (!rgb) return '#000000';
+    return relativeLuminance(rgb) > 0.45 ? '#000000' : '#ffffff';
+  }
+
+  function oppositePole(colour) {
+    return contrastPole(colour) === '#000000' ? '#ffffff' : '#000000';
   }
 
   // Apply the owner's accent colour — but only if it is actually readable on
@@ -216,9 +266,67 @@
 
   /* -------------------------------------------------------------- profile */
 
+  /* --------------------------------------------------------------- banner */
+
+  var BANNER_HEIGHTS = { short: '11rem', medium: '17rem', tall: '25rem' };
+
+  // Paint the banner background and decide what colour its text should be.
+  function decorateBanner(head, banner) {
+    var style = banner.style;
+    var solid = banner.color || '#1f4d6b';
+
+    head.style.setProperty('--banner-min-h', BANNER_HEIGHTS[banner.height] || BANNER_HEIGHTS.medium);
+    head.style.setProperty('--banner-solid', solid);
+
+    if (style === 'solid') {
+      head.style.setProperty('--banner-bg', solid);
+    } else if (style === 'gradient') {
+      var c2 = banner.color2 || solid;
+      var angle = Number(banner.angle);
+      if (!isFinite(angle)) angle = 160;
+      head.style.setProperty('--banner-bg', 'linear-gradient(' + angle + 'deg, ' + solid + ', ' + c2 + ')');
+    } else if (style === 'photo') {
+      var img = safeUrl(banner.image);
+      if (img) {
+        // The photo goes on its own layer so the scrim can sit above it.
+        head.style.setProperty('--banner-image', 'url("' + img.replace(/"/g, '%22') + '")');
+        head.style.setProperty('--banner-focal', banner.focal || 'center');
+      }
+      head.style.setProperty('--banner-bg', solid);
+    }
+
+    // Text colour: explicit, else derived from how light the background is.
+    // A photo always carries the scrim, so light text is always correct there.
+    var text = has(banner.textColor) ? banner.textColor : autoTextOn(style === 'photo' ? '#222222' : solid);
+    head.style.setProperty('--banner-text', text);
+    head.style.setProperty('--banner-text-soft', 'color-mix(in srgb, ' + text + ' 78%, transparent)');
+  }
+
+  // Black or white, whichever is more readable on the given background.
+  function autoTextOn(bg) {
+    var rgb = parseColor(bg);
+    if (!rgb) return '#ffffff';
+    return relativeLuminance(rgb) > 0.45 ? '#16181a' : '#ffffff';
+  }
+
   function renderMasthead(content) {
     var p = content.profile || {};
-    var head = el('header', { class: 'masthead' });
+    var banner = (content.meta && content.meta.banner) || {};
+    var style = banner.style || 'none';
+
+    // The masthead is full-bleed so a banner background can run edge to edge;
+    // an inner wrapper reproduces the page's width and padding so the text
+    // still lines up with the content below. With no banner the background is
+    // transparent and this renders exactly as the plain masthead did.
+    var head = el('header', {
+      class: 'masthead' + (style !== 'none' ? ' masthead--banner masthead--' + style : ''),
+      'data-banner': style
+    });
+
+    if (style !== 'none') decorateBanner(head, banner);
+
+    var inner = el('div', { class: 'masthead__inner' + (banner.align === 'center' ? ' masthead__inner--center' : '') });
+    head.appendChild(inner);
 
     // Photo, or initials if none set.
     var photo = safeUrl(p.photo);
@@ -233,7 +341,7 @@
     } else {
       avatar = el('div', { class: 'avatar avatar--initials', 'data-avatar': '1', 'aria-hidden': 'true' }, initialsOf(p.name));
     }
-    head.appendChild(avatar);
+    inner.appendChild(avatar);
 
     var body = el('div', { class: 'masthead__body' });
 
@@ -278,7 +386,7 @@
       body.appendChild(editable(el('p', { class: 'masthead__summary' }, p.summary), 'profile.summary', 'A short summary about you'));
     }
 
-    head.appendChild(body);
+    inner.appendChild(body);
     return head;
   }
 
@@ -632,8 +740,10 @@
 
     root.textContent = '';   // clear without innerHTML
 
+    // The masthead sits outside .page so a banner can run edge to edge.
+    root.appendChild(renderMasthead(content));
+
     var page = el('div', { class: 'page' });
-    page.appendChild(renderMasthead(content));
 
     var sections = Array.isArray(content.sections) ? content.sections : [];
     var hasRail = sections.some(function (s) { return s && s.type === 'tools'; });
@@ -642,6 +752,9 @@
     // DOM: that ordering is what puts it beside the content on a wide screen
     // and directly under the intro on a phone, from one set of markup.
     var rail = null;
+    // The width class goes on #app as well, so the banner (which now sits
+    // outside .page) widens in step with the content and stays aligned.
+    root.classList.toggle('has-rail', hasRail);
     if (hasRail) {
       page.classList.add('page--has-rail');
       rail = el('aside', { class: 'toolrail', 'aria-label': 'Tools' });
@@ -668,9 +781,87 @@
     root.appendChild(page);
 
     setupReveal(page);
+    setupCondense(root);
 
     // Let the editor re-attach its controls after every re-render.
     document.dispatchEvent(new CustomEvent('portfolio:rendered'));
+  }
+
+  /* ------------------------------------------------------ pin and condense */
+
+  // The masthead pins to the top on a wide screen and shrinks to a slim bar
+  // once you scroll past it.
+  //
+  // FAILS OPEN, deliberately: the class that enables pinning is added only
+  // after the observer has been constructed successfully. If
+  // IntersectionObserver is unavailable, nothing pins and the page scrolls
+  // normally — the failure mode must never be a tall banner welded to the
+  // top of the screen with no way to shrink it.
+  var condenseState = { onScroll: null, onResize: null };
+
+  function setupCondense(root) {
+    root.classList.remove('has-sticky-head', 'is-condensed');
+
+    if (condenseState.onScroll) { window.removeEventListener('scroll', condenseState.onScroll); condenseState.onScroll = null; }
+    if (condenseState.onResize) { window.removeEventListener('resize', condenseState.onResize); condenseState.onResize = null; }
+
+    if (State.editing) return;               // a shrinking header can't be edited
+
+    var head = root.querySelector('.masthead');
+    if (!head) return;
+
+    // A passive, frame-throttled scroll listener rather than an
+    // IntersectionObserver on a sentinel.
+    //
+    // The sentinel approach is tidier in principle but has a trap: a sticky
+    // element still occupies its box in normal flow, so the moment the header
+    // condenses, that box shrinks and drags any following sentinel up onto
+    // the trigger line — after which it can never expand again. Anchoring the
+    // sentinel elsewhere fixes that, but the observer still only recomputes
+    // during a rendering pass, which made the behaviour hard to pin down.
+    // Reading scrollY directly is a handful of lines, fires reliably, and is
+    // straightforward to verify.
+    var threshold = 120;
+
+    function measureThreshold() {
+      // Never measure while condensed: that would read the shrunken height
+      // and drag the trigger down to nothing, sticking it permanently.
+      if (root.classList.contains('is-condensed')) return;
+      threshold = Math.max(80, head.offsetHeight - 96);
+    }
+    measureThreshold();
+
+    // Deliberately NOT throttled through a requestAnimationFrame "ticking"
+    // flag. That pattern deadlocks if a single frame callback is ever
+    // dropped — the flag stays raised and the handler goes permanently deaf.
+    // Reading scrollY is cheap and forces no layout, and the class is only
+    // touched when the state actually changes, so there is nothing to gain
+    // by deferring this.
+    var condensed = false;
+
+    function update() {
+      var y = window.scrollY || document.documentElement.scrollTop || 0;
+      // A dead band, so a scroll resting exactly on the boundary cannot
+      // flicker between the two states.
+      var next = condensed ? (y >= threshold - 40) : (y > threshold);
+      if (next === condensed) return;
+      condensed = next;
+      root.classList.toggle('is-condensed', condensed);
+    }
+
+    condenseState.onScroll = update;
+
+    var timer = null;
+    condenseState.onResize = function () {
+      clearTimeout(timer);
+      timer = setTimeout(measureThreshold, 200);
+    };
+
+    window.addEventListener('scroll', condenseState.onScroll, { passive: true });
+    window.addEventListener('resize', condenseState.onResize, { passive: true });
+
+    update();                                // reflect the position we loaded at
+    root.classList.add('has-sticky-head');
   }
 
   /* -------------------------------------------------------- scroll reveal */

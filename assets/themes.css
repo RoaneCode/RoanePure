@@ -104,6 +104,14 @@
   --tool-bg: transparent;           /* tiles in the Tools rail             */
   --tool-border: var(--border);
   --tool-radius: var(--radius-lg);
+
+  /* Headings default to the body text colour. Existing behaviour is
+     unchanged; the variable exists so a custom colour has something to
+     override without touching every heading rule. */
+  --heading: var(--text);
+
+  --head-bg: var(--bg);             /* backdrop of the pinned header       */
+  --head-condensed-h: 4.5rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -131,6 +139,34 @@
   /* A little craft, kept quiet: an accent bar under the name, a tick beside
      each job title, and a slight lift on project cards. Enough to stop it
      reading as a plain document without costing it any formality. */
+  --name-rule-display: block;
+  --entry-marker-display: block;
+  --card-lift: -2px;
+  --card-shadow-hover: 0 10px 24px -16px rgba(26, 26, 26, .35);
+}
+
+/* --------------------------------------------------------------------------
+   6. CUSTOM — your own design
+   Starts from the Classic variable set and is then overridden by the colours
+   you choose, which app.js writes as inline custom properties on <html>.
+   Kept separate so the five built-in themes stay pristine: switching back to
+   Editorial always gives you Editorial, never a half-edited version of it.
+   -------------------------------------------------------------------------- */
+[data-theme='custom'] {
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: Georgia, 'Times New Roman', serif;
+
+  --bg: #ffffff;
+  --bg-sunken: #f6f5f2;
+  --text: #1a1a1a;
+  --text-muted: #5c5c5c;
+
+  --border: #dcd8d0;
+  --border-strong: #1a1a1a;
+
+  --page-max: 52rem;
+  --section-rule: 1px solid var(--border-strong);
+
   --name-rule-display: block;
   --entry-marker-display: block;
   --card-lift: -2px;

@@ -24,6 +24,9 @@
   --text: #000 !important;
   --text-muted: #1a1a1a !important;
   --text-faint: #444 !important;
+  /* A custom heading colour is a screen choice. On paper it prints washed
+     out and burns colour ink for nothing. */
+  --heading: #000 !important;
 
   --accent: #000 !important;
   --accent-soft: transparent !important;
@@ -153,6 +156,7 @@ html, body {
   transform: none !important;
 }
 .tool__art { display: none !important; }
+.tool__art, .tool { filter: none !important; opacity: 1 !important; }
 
 .tool__name {
   font-size: 10pt !important;
@@ -163,13 +167,57 @@ html, body {
 }
 .tool:not(:last-child) .tool__name::after { content: '\00a0·\00a0'; }
 
+/* The banner is screen decoration. On paper it must not become a full-bleed
+   band of ink, and a PDF taken while the header happens to be condensed must
+   still carry the summary and contact details. */
 .masthead {
   display: block !important;
+  position: static !important;
+  background: none !important;
+  color: #000 !important;
   text-align: center;
-  padding-bottom: .5rem;
+  padding: 0 !important;
   margin-bottom: 1rem;
-  border-bottom: 1px solid #000;
+  min-height: 0 !important;
   break-inside: avoid;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.masthead::before,
+.masthead::after { display: none !important; }   /* photo layer and its scrim */
+
+/* Banner text is often white, which on white paper means an invisible name.
+   Everything in the header is forced back to black. */
+.masthead__name,
+.masthead__headline,
+.masthead__location,
+.masthead__summary,
+.masthead__summary::first-letter,
+.masthead .contact a,
+.masthead .contact span { color: #000 !important; }
+
+.masthead__name::after { display: none !important; }   /* accent bar */
+
+.masthead__inner {
+  display: block !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 0 .5rem !important;
+  border-bottom: 1px solid #000;
+  text-align: center !important;
+}
+.masthead__inner::after { display: none !important; }
+
+/* Undo the condensed state, whatever the screen happened to be showing. */
+.is-condensed .masthead__location,
+.is-condensed .masthead__summary { display: block !important; }
+.is-condensed .contact { display: flex !important; }
+.is-condensed .masthead__headline::before { content: none !important; }
+.is-condensed .masthead__name {
+  font-size: 22pt !important;
+  white-space: normal !important;
 }
 
 .avatar { display: none !important; }   /* photos are not standard on a printed CV */
