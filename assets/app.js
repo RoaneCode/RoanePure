@@ -180,7 +180,41 @@
     var theme = meta.theme || 'classic';
     document.documentElement.setAttribute('data-theme', theme);
     applyPalette(meta.palette);
+    applyBackground(meta.background);
     applyAccent(meta.accentColor);
+  }
+
+  // Whole-page background: a colour, a gradient, or a photograph.
+  //
+  // Painted onto a fixed, full-viewport layer behind everything (see
+  // body::before in styles.css) rather than with background-attachment:
+  // fixed, which iOS Safari handles badly and which janks on long pages.
+  function applyBackground(bg) {
+    var root = document.documentElement;
+    ['--page-bg-layer', '--page-bg-focal'].forEach(function (p) { root.style.removeProperty(p); });
+    root.removeAttribute('data-bg');
+
+    bg = bg || {};
+    var style = bg.style || 'none';
+    if (style === 'none') return;
+
+    if (style === 'color' && has(bg.color)) {
+      root.style.setProperty('--page-bg-layer', bg.color);
+    } else if (style === 'gradient') {
+      var a = bg.color || '#ffffff';
+      var b = bg.color2 || a;
+      var angle = Number(bg.angle);
+      if (!isFinite(angle)) angle = 160;
+      root.style.setProperty('--page-bg-layer', 'linear-gradient(' + angle + 'deg, ' + a + ', ' + b + ')');
+    } else if (style === 'photo') {
+      var img = safeUrl(bg.image);
+      if (!img) return;
+      root.style.setProperty('--page-bg-layer', 'url("' + img.replace(/"/g, '%22') + '")');
+      root.style.setProperty('--page-bg-focal', bg.focal || 'center');
+    }
+
+    // Drives the readability veil behind the text column.
+    root.setAttribute('data-bg', style);
   }
 
   // Your own colours, layered over whichever theme is active. Each is
@@ -699,6 +733,99 @@
     return listOf(wrap, 'sections.' + sIndex + '.items', 'tool');
   }
 
+  /* ---------------------------------------------------------------- video */
+
+  // Pull a video ID out of whatever YouTube or Vimeo URL was pasted, then
+  // build the embed against a fixed host from that ID.
+  //
+  // Content therefore never supplies an iframe address — it supplies an ID we
+  // have validated. That keeps the rule that nothing in content.json can aim
+  // the page at arbitrary code.
+  function parseVideoUrl(url) {
+    var u = String(url || '').trim();
+    if (!u) return null;
+
+    var m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,20})/i);
+    if (m) {
+      return {
+        provider: 'YouTube',
+        // nocookie + no related videos from other channels
+        src: 'https://www.youtube-nocookie.com/embed/' + m[1] + '?rel=0'
+      };
+    }
+
+    m = u.match(/vimeo\.com\/(?:video\/|channels\/[\w]+\/|groups\/[\w]+\/videos\/)?(\d{6,12})/i);
+    if (m) {
+      return { provider: 'Vimeo', src: 'https://player.vimeo.com/video/' + m[1] + '?dnt=1' };
+    }
+
+    return null;
+  }
+
+  function renderVideo(section, sIndex) {
+    var wrap = el('div', { class: 'videos' });
+    var items = Array.isArray(section.items) ? section.items : [];
+
+    items.forEach(function (item, i) {
+      item = item || {};
+      var base = 'sections.' + sIndex + '.items.' + i;
+      var block = el('figure', { class: 'video', 'data-item': base });
+      var frame = el('div', { class: 'video__frame' });
+
+      var file = safeUrl(item.file);
+      var embed = item.source === 'link' ? parseVideoUrl(item.url) : null;
+
+      if (item.source !== 'link' && file) {
+        var v = el('video', {
+          controls: '',
+          // Without this a phone downloads the whole file just for landing
+          // on the page.
+          preload: 'metadata',
+          playsinline: '',
+          poster: safeUrl(item.poster) || null
+        });
+        v.appendChild(el('source', { src: file }));
+        v.appendChild(document.createTextNode('Your browser cannot play this video.'));
+        frame.appendChild(v);
+      } else if (embed) {
+        frame.appendChild(el('iframe', {
+          src: embed.src,
+          title: has(item.caption) ? item.caption : (embed.provider + ' video'),
+          loading: 'lazy',
+          allow: 'accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen',
+          allowfullscreen: '',
+          referrerpolicy: 'strict-origin-when-cross-origin'
+        }));
+        block.setAttribute('data-video-url', item.url || '');
+      } else if (State.editing) {
+        frame.appendChild(el('div', { class: 'video__empty' }, 'No video yet — use ⚙ Details to add one.'));
+      } else {
+        return;   // nothing playable; show nothing at all
+      }
+
+      block.appendChild(frame);
+      if (has(item.caption) || State.editing) {
+        block.appendChild(editable(el('figcaption', { class: 'video__caption' }, item.caption),
+          base + '.caption', 'Caption (optional)'));
+      }
+      wrap.appendChild(block);
+    });
+
+    return listOf(wrap, 'sections.' + sIndex + '.items', 'video');
+  }
+
+  // A video section with nothing playable in it shows nothing at all to a
+  // visitor — no heading, no empty frame. It stays visible while editing so
+  // it can be filled in.
+  function sectionIsEmpty(section) {
+    if (!section || section.type !== 'video') return false;
+    var items = Array.isArray(section.items) ? section.items : [];
+    return !items.some(function (it) {
+      if (!it) return false;
+      return it.source === 'link' ? !!parseVideoUrl(it.url) : has(it.file);
+    });
+  }
+
   var RENDERERS = {
     timeline: renderTimeline,
     cards: renderCards,
@@ -706,7 +833,8 @@
     text: renderText,
     gallery: renderGallery,
     files: renderFiles,
-    tools: renderTools
+    tools: renderTools,
+    video: renderVideo
   };
 
   function renderSection(section, index) {
@@ -764,6 +892,7 @@
     var main = el('main', { id: 'main' });
     sections.forEach(function (s, i) {
       if (!s) return;
+      if (!State.editing && sectionIsEmpty(s)) return;   // empty video section
       var node = renderSection(s, i);
       if (s.type === 'tools' && rail) rail.appendChild(node);
       else main.appendChild(node);
@@ -1059,7 +1188,9 @@
     applyAccent: applyAccent,
     contrastRatio: contrastRatio,
     svgIcon: svgIcon,
-    initialsOf: initialsOf
+    initialsOf: initialsOf,
+    parseVideoUrl: parseVideoUrl,
+    applyBackground: applyBackground
   };
 
   if (document.readyState === 'loading') {

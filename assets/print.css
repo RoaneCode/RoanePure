@@ -131,12 +131,26 @@ html, body {
 
 /* --- Compact resume header ---------------------------------------------- */
 
+/* Flex rather than block, purely so the Tools rail can be re-ordered to the
+   end. The rail sits before <main> in the markup — that ordering is what puts
+   it beside the content on desktop and under the intro on a phone — but on
+   paper it belongs after the experience, not before it. */
 .page {
   max-width: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  display: block !important;   /* collapse the two-column rail grid */
+  display: flex !important;
+  flex-direction: column;
+  background: none !important;
+  backdrop-filter: none !important;
 }
+
+.page > main { order: 1; }
+.page > .toolrail { order: 2; }
+.page > .page-footer { order: 3; }
+
+/* Page background photo/gradient must never print. */
+body::before { display: none !important; }
 
 /* The Tools rail is decoration and must not take a column of the page.
    The tools themselves still print — as a plain comma-separated run, which
@@ -158,6 +172,25 @@ html, body {
 }
 .tool__art { display: none !important; }
 .tool__art, .tool { filter: none !important; opacity: 1 !important; }
+
+/* A video cannot print, but its address can — so a printed CV still tells
+   the reader where to watch it. */
+.video__frame { display: none !important; }
+.video { break-inside: avoid; margin-bottom: 6pt; }
+
+.video[data-video-url]::after {
+  content: 'Video: ' attr(data-video-url);
+  font-size: 10pt;
+  color: #000;
+  word-break: break-all;
+}
+
+.video__caption {
+  max-width: none !important;
+  margin: 0 !important;
+  font-size: 10pt !important;
+  color: #000 !important;
+}
 
 .tool__name {
   font-size: 10pt !important;

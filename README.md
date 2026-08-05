@@ -175,11 +175,34 @@ Pick from the **design dropdown** in the toolbar. It changes instantly so you ca
 | **Bold & modern** | Design, marketing, creative roles. |
 | **Dark & technical** | Engineering, data, technical roles. |
 
+### Reordering sections
+
+**Sections** in the toolbar lists everything in order with ↑ ↓ buttons. Move anything anywhere, or delete it.
+
+One thing to know: a **Tools** section always shows in the right-hand rail on a computer, wherever you place it in the list. Moving it changes where it lands in your **PDF**, not on screen.
+
+### An introduction video
+
+**Add section → "Introduction video"**, then **+ Add video**. Two ways:
+
+- **Paste a YouTube or Vimeo link** — no size limit, quality adapts to the viewer's connection. The player does load Google's or Vimeo's cookies onto your page.
+- **Upload a file** — kept entirely on your own site, no third parties at all. Best under 25MB; GitHub refuses anything over 100MB.
+
+The video sits at about two-thirds the width of your text on a computer, and full width on a phone — big enough to watch, not so big it swallows the page. It never plays on its own.
+
+Because it's a normal section, use **Sections** to put it wherever you like — directly under the banner, or further down.
+
+**If there's no video in it, the whole section disappears** for visitors — no heading, no empty box. You'll still see it while editing so you can fill it in.
+
+In the PDF the player is replaced by its web address, so a printed CV still tells people where to watch.
+
 ### Your own colours
 
 **Colours** in the toolbar gives you four controls: page background, body text, headings, and links & accents. Each has a **Use theme** button to put it back.
 
 Touching any of them moves you onto the **Custom** design, copying across whatever theme you were looking at so nothing jumps. That means the five built-in themes stay untouched — picking Editorial again always gives you Editorial, never a half-edited version.
+
+The **Background style** control at the top gives the whole page a solid colour, a gradient, or a photograph — the same three choices as the banner. Over a photo, a soft wash of your background colour sits behind the text so your writing stays readable; the photo still shows around the edges.
 
 A **contrast reading** updates as you choose. Above 4.5:1 is comfortable; below 3:1 many people will struggle. It warns you but never stops you — it's your site.
 

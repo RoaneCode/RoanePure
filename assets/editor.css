@@ -427,6 +427,36 @@ body.ed-on [data-item] {
   cursor: pointer;
 }
 
+.ed-sectionrow {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.ed-sectionrow__num {
+  flex: 0 0 1.4rem;
+  font-size: .78rem;
+  color: #9ca3af;
+  font-variant-numeric: tabular-nums;
+}
+
+.ed-sectionrow__body { flex: 1 1 auto; min-width: 0; }
+
+.ed-sectionrow__name {
+  display: block;
+  font-weight: 600;
+  font-size: .9rem;
+  overflow-wrap: anywhere;
+}
+
+.ed-sectionrow__type {
+  display: block;
+  font-size: .74rem;
+  color: #6b7280;
+}
+
 .ed-designrow {
   display: flex;
   align-items: center;

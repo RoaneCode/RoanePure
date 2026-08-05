@@ -58,7 +58,21 @@
     { id: 'text',     name: 'Paragraphs of text' },
     { id: 'gallery',  name: 'Photo gallery' },
     { id: 'files',    name: 'Files to download' },
-    { id: 'tools',    name: 'Tools & logos (side rail)' }
+    { id: 'tools',    name: 'Tools & logos (side rail)' },
+    { id: 'video',    name: 'Introduction video' }
+  ];
+
+  var SECTION_TYPE_NAMES = {
+    timeline: 'Timeline', cards: 'Cards', groups: 'Skill groups',
+    text: 'Paragraphs', gallery: 'Photo gallery', files: 'Files',
+    tools: 'Tools rail', video: 'Video'
+  };
+
+  var BG_STYLES = [
+    { id: 'none',     name: 'Theme default' },
+    { id: 'color',    name: 'Solid colour' },
+    { id: 'gradient', name: 'Colour gradient' },
+    { id: 'photo',    name: 'Photograph' }
   ];
 
   // Uploads are restricted to formats that cannot carry executable code.
@@ -68,7 +82,10 @@
   var ALLOWED = {
     jpg: 'image', jpeg: 'image', png: 'image', gif: 'image', webp: 'image',
     pdf: 'doc', doc: 'doc', docx: 'doc', xls: 'doc', xlsx: 'doc',
-    ppt: 'doc', pptx: 'doc', txt: 'doc', csv: 'doc', rtf: 'doc', odt: 'doc'
+    ppt: 'doc', pptx: 'doc', txt: 'doc', csv: 'doc', rtf: 'doc', odt: 'doc',
+    // Video containers are not executable, so allowing them keeps the
+    // upload rule intact.
+    mp4: 'video', webm: 'video', mov: 'video'
   };
   var BLOCKED_MSG = {
     svg: 'SVG files can contain code, so they are blocked. Save it as a PNG and upload that instead.',
@@ -80,6 +97,8 @@
 
   var MAX_DOC = 20 * 1024 * 1024;   // hard stop
   var WARN_DOC = 5 * 1024 * 1024;   // just a warning
+  var MAX_VIDEO = 100 * 1024 * 1024;  // GitHub's hard per-file limit
+  var WARN_VIDEO = 25 * 1024 * 1024;  // slow on mobile data beyond this
 
   /* ---------------------------------------------------------------- state */
 
@@ -431,7 +450,7 @@
     bar.appendChild(button('Banner', openBanner));
     bar.appendChild(button('Designs', openDesigns));
     bar.appendChild(button('Site details', openSiteDetails));
-    bar.appendChild(button('Add section', function () { addSection(); }));
+    bar.appendChild(button('Sections', openSections));
     bar.appendChild(button('Print / PDF', function () { window.print(); }));
     bar.appendChild(button('View as visitor', function () { setPreview(true); }));
 
@@ -642,7 +661,7 @@
     group: 'Add skill group', bullet: 'Add bullet point', tag: 'Add tag',
     skill: 'Add skill', paragraph: 'Add paragraph', link: 'Add link',
     photo: 'Add photo', file: 'Add file', attachment: 'Attach a file',
-    tool: 'Add tool'
+    tool: 'Add tool', video: 'Add video'
   };
 
   function blankItem(kind) {
@@ -728,10 +747,16 @@
       wrap.appendChild(down);
     }
 
-    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline' || kind === 'tool') {
+    if (kind === 'card' || kind === 'section' || kind === 'link' || kind === 'photo' || kind === 'file' || kind === 'attachment' || kind === 'timeline' || kind === 'tool' || kind === 'video') {
       var cog = el('button', { class: 'ed-chip', type: 'button' }, '⚙ Details');
       cog.addEventListener('click', function () { openDetails(listPath + '.' + index, kind); });
       wrap.appendChild(cog);
+    }
+
+    if (kind === 'video') {
+      var vid = el('button', { class: 'ed-chip', type: 'button' }, '🎬 Change video');
+      vid.addEventListener('click', function () { openVideoPicker(listPath, index); });
+      wrap.appendChild(vid);
     }
 
     if (kind === 'card') {
@@ -848,7 +873,70 @@
     });
   }
 
+  // Add a video either by uploading a file or by pasting a link. The link is
+  // validated here so a typo is caught immediately rather than silently
+  // rendering nothing.
+  function openVideoPicker(listPath, itemIndex) {
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, itemIndex === undefined ? 'Add a video' : 'Change this video'));
+
+      box.appendChild(el('h3', {}, 'Paste a link'));
+      box.appendChild(el('p', {}, 'A YouTube or Vimeo address. Nothing is stored on your site, and there is no size limit — but the player does load Google’s or Vimeo’s cookies onto your page.'));
+      var url = field(box, 'Video address', '', { placeholder: 'https://www.youtube.com/watch?v=…' });
+      var note = el('div', {});
+      box.appendChild(note);
+
+      function useLink() {
+        var parsed = P.parseVideoUrl(url.value);
+        if (!parsed) {
+          note.textContent = '';
+          note.appendChild(el('div', { class: 'editor-panel__note editor-panel__note--bad' },
+            'That does not look like a YouTube or Vimeo address. Copy the link from your browser’s address bar while the video is playing.'));
+          return;
+        }
+        var list = listAt(listPath);
+        var item = { source: 'link', url: url.value.trim(), file: '', poster: '', caption: '' };
+        if (itemIndex === undefined) list.push(item);
+        else list[itemIndex] = item;
+        markDirty();
+        close();
+        P.render();
+        toast(parsed.provider + ' video added.', 'ok');
+      }
+
+      box.appendChild(el('h3', {}, 'Or upload a file'));
+      box.appendChild(el('p', {}, 'Kept entirely on your own site — no third parties. Best under 25 MB, since visitors download the whole file.'));
+
+      actions(box, [
+        { label: 'Use this link', primary: true, onClick: useLink },
+        {
+          label: 'Upload a video file', onClick: function () {
+            close();
+            uploadVideoFile(listPath, itemIndex);
+          }
+        },
+        { label: 'Cancel', onClick: close }
+      ]);
+    });
+  }
+
+  function uploadVideoFile(listPath, itemIndex) {
+    if (!Ed.ready) { toast('Unlock editing first — uploads are saved straight to GitHub.', 'bad'); openUnlock(); return; }
+    fileInput('video/mp4,video/webm,video/quicktime', false, function (files) {
+      runUploads(files, 0, function (results) {
+        if (!results.length) return;
+        var list = listAt(listPath);
+        var item = { source: 'upload', file: results[0].path, url: '', poster: '', caption: '' };
+        if (itemIndex === undefined) list.push(item);
+        else list[itemIndex] = item;
+        markDirty();
+        P.render();
+      });
+    });
+  }
+
   function addItem(listPath, kind) {
+    if (kind === 'video') { openVideoPicker(listPath); return; }
     if (kind === 'tool') { openToolPicker(listPath); return; }
     if (UPLOAD_KINDS[kind]) { openUpload(listPath, kind); return; }
     listAt(listPath).push(blankItem(kind));
@@ -915,6 +1003,7 @@
             };
             // Start with one empty item so the section isn't a blank box.
             var seedKind = { timeline: 'timeline', cards: 'card', groups: 'group', text: 'paragraph' }[kind];
+            if (kind === 'video') section.items = [];
             if (seedKind) section.items.push(blankItem(seedKind));
             listAt('sections').push(section);
             markDirty();
@@ -963,6 +1052,10 @@
     attachment: [
       { key: 'label', label: 'File name shown on the page' },
       { key: 'description', label: 'Short description' }
+    ],
+    video: [
+      { key: 'caption', label: 'Caption (optional)' },
+      { key: 'url', label: 'Video address (YouTube/Vimeo)', placeholder: 'https://…' }
     ],
     tool: [
       { key: 'name', label: 'Tool name' },
@@ -1126,6 +1219,55 @@
         }
       }
 
+      // --- background style: colour, gradient or photo ---
+      m.background = m.background || { style: 'none' };
+      var bg = m.background;
+
+      var bgStyle = field(box, 'Background style', bg.style || 'none', { type: 'select', options: BG_STYLES });
+      var bgExtra = el('div', {});
+      box.appendChild(bgExtra);
+
+      function paintBg() {
+        bgExtra.textContent = '';
+        bg.style = bgStyle.value;
+
+        // Same reasoning as the banner: make the defaults real so the swatch
+        // and the page agree.
+        if (bg.style === 'color' || bg.style === 'gradient') {
+          if (!has(bg.color)) bg.color = rgbToHex(getComputedStyle(document.documentElement).getPropertyValue('--bg'));
+          if (bg.style === 'gradient' && !has(bg.color2)) bg.color2 = '#e8e8e8';
+        }
+
+        if (bg.style === 'gradient') {
+          colourRow(bgExtra, 'Gradient start', function () { return bg.color || '#ffffff'; },
+            function (v) { bg.color = v; }, refresh);
+          colourRow(bgExtra, 'Gradient end', function () { return bg.color2 || '#e8e8e8'; },
+            function (v) { bg.color2 = v; }, refresh);
+          var ang = field(bgExtra, 'Gradient angle (degrees)', String(bg.angle === undefined ? 160 : bg.angle));
+          ang.type = 'number';
+          ang.addEventListener('input', function () { bg.angle = Number(ang.value) || 0; refresh(); });
+        } else if (bg.style === 'color') {
+          colourRow(bgExtra, 'Background colour', function () { return bg.color || '#ffffff'; },
+            function (v) { bg.color = v; }, refresh);
+        } else if (bg.style === 'photo') {
+          var up = el('button', { class: 'ed-btn', type: 'button', style: 'width:100%;justify-content:center;margin-bottom:.6rem' },
+            bg.image ? 'Replace background photo' : 'Upload background photo');
+          up.addEventListener('click', function () { close(); uploadPageBackground(); });
+          bgExtra.appendChild(up);
+          bgExtra.appendChild(el('p', { style: 'font-size:.82rem;margin-top:-.3rem' },
+            'A soft wash of your background colour sits behind the text so it stays readable over the photo. The photo still shows around the edges.'));
+          var focal = field(bgExtra, 'Focus point', bg.focal || 'center', {
+            type: 'select', options: [
+              { id: 'center', name: 'Centre' }, { id: 'top', name: 'Top' },
+              { id: 'bottom', name: 'Bottom' }, { id: 'left', name: 'Left' }, { id: 'right', name: 'Right' }
+            ]
+          });
+          focal.addEventListener('change', function () { bg.focal = focal.value; refresh(); });
+        }
+        refresh();
+      }
+      bgStyle.addEventListener('change', paintBg);
+
       colourRow(box, 'Page background', function () { return m.palette.pageBg; },
         function (v) { m.palette.pageBg = v; }, refresh);
       colourRow(box, 'Body text', function () { return m.palette.pageText; },
@@ -1136,7 +1278,7 @@
         function (v) { m.accentColor = v; }, refresh);
 
       box.appendChild(readout);
-      refresh();
+      paintBg();
 
       actions(box, [
         { label: 'Done', primary: true, onClick: function () { close(); P.render(); } },
@@ -1176,6 +1318,12 @@
         var s = style.value;
         b.style = s;
         if (s === 'none') { apply(); return; }
+
+        // Write the defaults into the data rather than leaving them blank.
+        // Otherwise the swatch shows one colour while the page falls back to
+        // another, which looks like the picker is being ignored.
+        if (!has(b.color)) b.color = '#1f4d6b';
+        if (s === 'gradient' && !has(b.color2)) b.color2 = '#0f2f33';
 
         colourRow(extra, s === 'gradient' ? 'Gradient start' : 'Background colour',
           function () { return b.color || '#1f4d6b'; },
@@ -1228,6 +1376,23 @@
     });
   }
 
+  function uploadPageBackground() {
+    if (!Ed.ready) { toast('Unlock editing first — uploads are saved straight to GitHub.', 'bad'); openUnlock(); return; }
+    fileInput('image/jpeg,image/png,image/webp', false, function (files) {
+      runUploads(files, 2200, function (results) {
+        if (!results.length) return;
+        var m = meta();
+        m.background = m.background || {};
+        m.background.style = 'photo';
+        m.background.image = results[0].path;
+        switchToCustom();
+        markDirty();
+        P.render();
+        toast('Page background set.', 'ok');
+      });
+    });
+  }
+
   function uploadBannerPhoto() {
     if (!Ed.ready) { toast('Unlock editing first — uploads are saved straight to GitHub.', 'bad'); openUnlock(); return; }
     fileInput('image/jpeg,image/png,image/webp', false, function (files) {
@@ -1243,6 +1408,69 @@
         P.render();
         toast('Background photo set.', 'ok');
       });
+    });
+  }
+
+  /* --------------------------------------------------- reorder sections */
+
+  // The inline arrows sit at the bottom of each section, which with a long
+  // section puts them nowhere near the heading. This lists everything in one
+  // place instead.
+  function openSections() {
+    var list = listAt('sections');
+
+    panel(function (box, close) {
+      box.appendChild(el('h2', {}, 'Sections'));
+      box.appendChild(el('p', {}, 'Move sections up and down to change the order they appear in.'));
+
+      if (!list.length) box.appendChild(el('div', { class: 'editor-panel__note' }, 'No sections yet.'));
+
+      var hasTools = false;
+
+      list.forEach(function (s, i) {
+        if (s && s.type === 'tools') hasTools = true;
+        var row = el('div', { class: 'ed-sectionrow' });
+        row.appendChild(el('span', { class: 'ed-sectionrow__num' }, String(i + 1)));
+
+        var body = el('span', { class: 'ed-sectionrow__body' });
+        body.appendChild(el('span', { class: 'ed-sectionrow__name' }, (s && s.title) || 'Untitled'));
+        body.appendChild(el('span', { class: 'ed-sectionrow__type' },
+          SECTION_TYPE_NAMES[s && s.type] || (s && s.type) || '?'));
+        row.appendChild(body);
+
+        var up = el('button', { class: 'ed-chip', type: 'button', 'aria-label': 'Move up' }, '↑');
+        up.disabled = i === 0;
+        up.addEventListener('click', function () {
+          moveItem('sections', i, -1); close(); openSections();
+        });
+        row.appendChild(up);
+
+        var down = el('button', { class: 'ed-chip', type: 'button', 'aria-label': 'Move down' }, '↓');
+        down.disabled = i === list.length - 1;
+        down.addEventListener('click', function () {
+          moveItem('sections', i, 1); close(); openSections();
+        });
+        row.appendChild(down);
+
+        var del = el('button', { class: 'ed-chip ed-chip--danger', type: 'button', 'aria-label': 'Delete section' }, '🗑');
+        del.addEventListener('click', function () {
+          close();
+          deleteItem('sections', 'section', i);
+        });
+        row.appendChild(del);
+
+        box.appendChild(row);
+      });
+
+      if (hasTools) {
+        box.appendChild(el('div', { class: 'editor-panel__note' },
+          'A Tools section always appears in the right-hand rail on a computer, wherever you put it in this list. Moving it changes where it lands in your PDF.'));
+      }
+
+      actions(box, [
+        { label: 'Done', primary: true, onClick: function () { close(); P.render(); } },
+        { label: 'Add a section', onClick: function () { close(); addSection(); } }
+      ]);
     });
   }
 
@@ -1421,6 +1649,9 @@
     if (ALLOWED[ext] === 'doc' && file.size > MAX_DOC) {
       return '“' + file.name + '” is ' + P.formatBytes(file.size) + '. The limit is 20 MB — consider linking to it instead.';
     }
+    if (ALLOWED[ext] === 'video' && file.size > MAX_VIDEO) {
+      return '“' + file.name + '” is ' + P.formatBytes(file.size) + '. GitHub refuses files over 100 MB — upload it to YouTube or Vimeo and paste the link instead.';
+    }
     return null;
   }
 
@@ -1590,6 +1821,9 @@
           return;
         }
 
+        if (ALLOWED[extOf(file.name)] === 'video' && file.size > WARN_VIDEO) {
+          toast('“' + file.name + '” is ' + P.formatBytes(file.size) + ' — that is a slow download on mobile data. A YouTube or Vimeo link would load faster for visitors.', null, 8000);
+        }
         if (ALLOWED[extOf(file.name)] === 'doc' && file.size > WARN_DOC) {
           toast('“' + file.name + '” is ' + P.formatBytes(file.size) + ' — large files make your page slow to open on mobile data.', null, 6000);
         }

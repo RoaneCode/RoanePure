@@ -30,6 +30,36 @@ body {
   overflow-x: hidden;               /* belt-and-braces against sideways scroll */
 }
 
+/* Whole-page background layer. Fixed and full-viewport, sitting behind
+   everything. Deliberately not background-attachment: fixed — iOS Safari
+   handles that badly and it janks on long pages. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--page-bg-layer, none);
+  background-size: cover;
+  background-position: var(--page-bg-focal, center);
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* Over a photograph, the text column gets a wash of the page colour behind
+   it. The photo still shows at the edges; the writing sits on something
+   solid, whatever the picture happens to be doing. */
+[data-bg='photo'] .page,
+[data-bg='photo'] .masthead:not(.masthead--banner) .masthead__inner {
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  [data-bg='photo'] .page,
+  [data-bg='photo'] .masthead:not(.masthead--banner) .masthead__inner {
+    backdrop-filter: blur(6px) saturate(1.15);
+  }
+}
+
 h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 img { max-width: 100%; height: auto; display: block; }
@@ -770,6 +800,58 @@ main { counter-reset: section; }
   font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
+}
+
+/* --- Video -------------------------------------------------------------- */
+
+.videos { display: grid; gap: 1.5rem; }
+.video { margin: 0; min-width: 0; }
+
+/* Deliberately moderate. The reading column is around 50rem, so a video
+   filling it would dominate every section beneath it. 36rem is about
+   two-thirds of the column — clearly a feature, not the whole page. On a
+   phone the 100% takes over, because anything smaller is too small to watch. */
+.video__frame {
+  position: relative;
+  width: 100%;
+  max-width: min(100%, 36rem);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.video__frame video,
+.video__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.video__empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  background: var(--bg-sunken);
+  color: var(--text-faint);
+  font-family: var(--font-meta);
+  font-size: .85rem;
+}
+
+.video__caption {
+  max-width: min(100%, 36rem);
+  margin-top: .5rem;
+  font-family: var(--font-meta);
+  font-size: .84rem;
+  line-height: 1.45;
+  color: var(--text-faint);
 }
 
 /* --- Files / attachments ------------------------------------------------ */
