@@ -68,13 +68,13 @@
           "start": "2024",
           "end": "Present",
           "bullets": [
-            "Build new systems and refine existing ones to improve how the team works day to day.↑↓🗑 Delete",
-            "Build, refine and maintain 100+ automated workflows across Zapier and other tools, eliminating an estimated at least 5-10 hours of manual work per week.↑↓🗑 Delete",
-            "Troubleshoot technical system issues and resolve them.↑↓🗑 Delete",
-            "Manage 2–3 million files annually, ensuring accurate file counts, proper upload, and correct storage across systems.↑↓🗑 Delete",
-            "Archive expired files by removing them from the live server and migrating them to cold storage, keeping active storage lean and costs controlled.↑↓🗑 Delete",
-            "Address client technical concerns directly via email.↑↓🗑 Delete",
-            "Collect and organize client data into structured, ready-to-work projects for the team.↑↓🗑 Delete"
+            "Build new systems and refine existing ones to improve how the team works day to day.",
+            "Build, refine and maintain 100+ automated workflows across Zapier and other tools, eliminating an estimated at least 5-10 hours of manual work per week.",
+            "Troubleshoot technical system issues and resolve them.",
+            "Manage 2–3 million files annually, ensuring accurate file counts, proper upload, and correct storage across systems.",
+            "Archive expired files by removing them from the live server and migrating them to cold storage, keeping active storage lean and costs controlled.",
+            "Address client technical concerns directly via email.",
+            "Collect and organize client data into structured, ready-to-work projects for the team."
           ],
           "attachments": []
         },
@@ -85,9 +85,9 @@
           "start": "2023",
           "end": "2024",
           "bullets": [
-            "Photographed studio sessions and delivered edited finals to clients.↑↓🗑 Delete",
-            "Handled post-production editing and file organization across sessions.↑↓🗑 Delete",
-            "Managed point-of-sale transactions and daily customer service.↑↓🗑 Delete"
+            "Photographed studio sessions and delivered edited finals to clients.",
+            "Handled post-production editing and file organization across sessions.",
+            "Managed point-of-sale transactions and daily customer service."
           ],
           "attachments": []
         },
@@ -98,10 +98,21 @@
           "start": "2021",
           "end": "2022",
           "bullets": [
-            "Produced educational video content for online classes, shooting and editing 30+ minute instructional sessions end to end.↑↓🗑 Delete",
-            "Delivered finished content for distribution across local television, YouTube, and Facebook Live.↑↓🗑 Delete",
-            "Directed studio shoots using green screen setups and managed on-location production as needed.↑↓🗑 Delete",
-            "Handled full post-production independently — editing, keying, and final delivery for broadcast-ready output.↑↓🗑 Delete"
+            "Produced educational video content for online classes, shooting and editing 30+ minute instructional sessions end to end.",
+            "Delivered finished content for distribution across local television, YouTube, and Facebook Live.",
+            "Directed studio shoots using green screen setups and managed on-location production as needed.",
+            "Handled full post-production independently — editing, keying, and final delivery for broadcast-ready output."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Sales Associate",
+          "org": "Polynesian Cultural Center",
+          "location": "Laie, Hawaii USA",
+          "start": "2017",
+          "end": "2020",
+          "bullets": [
+            "Cashier"
           ],
           "attachments": []
         }
