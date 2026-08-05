@@ -114,6 +114,35 @@
       ]
     },
     {
+      "id": "earlier-experience",
+      "title": "Earlier Experience",
+      "type": "timeline",
+      "items": [
+        {
+          "role": "Retail Sales & Inventory Associate",
+          "org": "Polynesian Cultural Center",
+          "location": "Laie, Hawaii USA",
+          "start": "2017",
+          "end": "2020",
+          "bullets": [
+            "Maintained inventory records and stock accuracy, drove in-store sales, and produced handmade coconut headbands sold as part of the store's product line."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Full-Time Missionary",
+          "org": "The Church of Jesus Christ of Latter-Day Saints",
+          "location": "Tacloban City",
+          "start": "2013",
+          "end": "2014",
+          "bullets": [
+            "Completed structured training before assignment. Delivered daily presentations and instruction to individuals and groups, coordinated community outreach and service activities, and worked in an assigned two-person team under regular supervision and reporting."
+          ],
+          "attachments": []
+        }
+      ]
+    },
+    {
       "id": "projects",
       "title": "Selected Projects",
       "type": "cards",
@@ -242,41 +271,6 @@
           "attachments": []
         }
       ]
-    },
-    {
-      "id": "earlier-experience",
-      "title": "Earlier Experience",
-      "type": "timeline",
-      "items": [
-        {
-          "role": "Retail Sales & Inventory Associate",
-          "org": "Polynesian Cultural Center",
-          "location": "Laie, Hawaii USA",
-          "start": "2017",
-          "end": "2020",
-          "bullets": [
-            "Maintained inventory records and stock accuracy, drove in-store sales, and produced handmade coconut headbands sold as part of the store's product line."
-          ],
-          "attachments": []
-        },
-        {
-          "role": "Full-Time Missionary",
-          "org": "The Church of Jesus Christ of Latter-Day Saints",
-          "location": "Tacloban City",
-          "start": "2013",
-          "end": "2014",
-          "bullets": [
-            "Completed structured training before assignment. Delivered daily presentations and instruction to individuals and groups, coordinated community outreach and service activities, and worked in an assigned two-person team under regular supervision and reporting."
-          ],
-          "attachments": []
-        }
-      ]
-    },
-    {
-      "id": "skills",
-      "title": "Skills",
-      "type": "text",
-      "items": []
     }
   ]
 }
