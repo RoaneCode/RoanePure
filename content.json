@@ -62,7 +62,7 @@
       "type": "timeline",
       "items": [
         {
-          "role": "Data & Systems Coordinator",
+          "role": "Data & Systems Coordinator (Remote)",
           "org": "Move Mountains Co.",
           "location": "Rhode Island, USA",
           "start": "2024",
@@ -301,14 +301,14 @@
         {
           "name": "Quire",
           "icon": "",
-          "logo": "",
+          "logo": "uploads/quire-logo-mroz.jpg",
           "color": "",
           "url": "https://quire.io/"
         },
         {
-          "name": "Adobe",
+          "name": "Visual Studio",
           "icon": "",
-          "logo": "",
+          "logo": "uploads/icons8-visual-studio-code-2019-48-9qov.jpg",
           "color": "",
           "url": "https://www.adobe.com/"
         }
