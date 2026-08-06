@@ -139,12 +139,12 @@
       "type": "cards",
       "items": [
         {
-          "name": "Returns Process Rebuild",
-          "description": "Mapped every step of a returns process that had grown unmanaged for six years, then rebuilt it around four decision points instead of nineteen. Cut handling time by more than half and gave the team a process they could explain to a new starter in ten minutes.",
+          "name": "Workflow Automation Library",
+          "description": "Built, refined and maintain 100+ automated workflows across Zapier and connected tools, removing an estimated 5–10 hours of manual work every week.",
           "tags": [
+            "Zapier",
             "Process design",
-            "Change management",
-            "Cost reduction"
+            "Automation"
           ],
           "url": "",
           "image": "",
@@ -152,12 +152,12 @@
           "attachments": []
         },
         {
-          "name": "Live Capacity Dashboard",
-          "description": "Replaced a fortnightly spreadsheet nobody trusted with a live view of depot capacity against booked volume. Planning meetings went from two hours of arguing about numbers to twenty minutes of deciding what to do about them.",
+          "name": "File Operations at Scale",
+          "description": "Manage 2–3 million files a year, verifying counts, upload accuracy and storage placement across systems.",
           "tags": [
-            "Reporting",
-            "Forecasting",
-            "Stakeholder buy-in"
+            "Data integrity",
+            "File management",
+            "Quality control"
           ],
           "url": "",
           "image": "",
@@ -165,12 +165,25 @@
           "attachments": []
         },
         {
-          "name": "Depot Onboarding Programme",
-          "description": "Designed the onboarding used across all four depots after we found new starters were taking eleven weeks to reach full productivity. Structured it into three checkpoints with a named buddy at each. Time to productivity came down to six weeks.",
+          "name": "Cold Storage Archival",
+          "description": "Built the process for retiring expired files from the live server into cold storage, keeping active storage lean and running costs controlled.",
           "tags": [
-            "Training",
-            "Documentation",
-            "Team development"
+            "Archival",
+            "Storage",
+            "Cost control"
+          ],
+          "url": "",
+          "image": "",
+          "imageAlt": "",
+          "attachments": []
+        },
+        {
+          "name": "Broadcast Education Series",
+          "description": "Produced 30+ minute instructional sessions end to end — directing green screen shoots, editing, keying and delivering broadcast-ready output for local television, YouTube and Facebook Live.",
+          "tags": [
+            "Videography",
+            "Post-production",
+            "Broadcast"
           ],
           "url": "",
           "image": "",
@@ -231,6 +244,29 @@
             "Reliability",
             "Collaboration"
           ]
+        }
+      ]
+    },
+    {
+      "id": "core-strengths",
+      "title": "Core Strengths",
+      "type": "list",
+      "items": [
+        {
+          "label": "Systems & Automation",
+          "text": "Workflow automation (Zapier), process design, systems troubleshooting, technical support"
+        },
+        {
+          "label": "Data Management",
+          "text": "Large-scale file management, data organization and integrity, archival and cold storage, client data structuring"
+        },
+        {
+          "label": "Production",
+          "text": "Videography, video editing, green screen production, broadcast delivery"
+        },
+        {
+          "label": "Foundation",
+          "text": "2 years software development coursework; 4+ years self-directed data and systems projects"
         }
       ]
     },
