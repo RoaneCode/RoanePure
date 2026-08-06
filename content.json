@@ -193,6 +193,29 @@
       ]
     },
     {
+      "id": "core-strengths",
+      "title": "Core Strengths",
+      "type": "list",
+      "items": [
+        {
+          "label": "Systems & Automation",
+          "text": "Workflow automation (Zapier), process design, systems troubleshooting, technical support"
+        },
+        {
+          "label": "Data Management",
+          "text": "Large-scale file management, data organization and integrity, archival and cold storage, client data structuring"
+        },
+        {
+          "label": "Production",
+          "text": "Videography, video editing, green screen production, broadcast delivery"
+        },
+        {
+          "label": "Foundation",
+          "text": "2 years software development coursework; 4+ years self-directed data and systems projects"
+        }
+      ]
+    },
+    {
       "id": "skills",
       "title": "Other Skills",
       "type": "groups",
@@ -244,58 +267,6 @@
             "Reliability",
             "Collaboration"
           ]
-        }
-      ]
-    },
-    {
-      "id": "core-strengths",
-      "title": "Core Strengths",
-      "type": "list",
-      "items": [
-        {
-          "label": "Systems & Automation",
-          "text": "Workflow automation (Zapier), process design, systems troubleshooting, technical support"
-        },
-        {
-          "label": "Data Management",
-          "text": "Large-scale file management, data organization and integrity, archival and cold storage, client data structuring"
-        },
-        {
-          "label": "Production",
-          "text": "Videography, video editing, green screen production, broadcast delivery"
-        },
-        {
-          "label": "Foundation",
-          "text": "2 years software development coursework; 4+ years self-directed data and systems projects"
-        }
-      ]
-    },
-    {
-      "id": "education",
-      "title": "Education",
-      "type": "timeline",
-      "items": [
-        {
-          "role": "Software Development",
-          "org": "Brigham Young University - Pathway",
-          "location": "Idaho, USA",
-          "start": "2022",
-          "end": "2024",
-          "bullets": [
-            "Completed 2 years, ladderized program online."
-          ],
-          "attachments": []
-        },
-        {
-          "role": "Social Work",
-          "org": "Brigham Young University",
-          "location": "Hawaii, USA",
-          "start": "2017",
-          "end": "2020",
-          "bullets": [
-            "Completed 3 years"
-          ],
-          "attachments": []
         }
       ]
     },
@@ -394,6 +365,35 @@
           "logo": "",
           "color": "",
           "url": ""
+        }
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "type": "timeline",
+      "items": [
+        {
+          "role": "Software Development",
+          "org": "Brigham Young University - Pathway",
+          "location": "Idaho, USA",
+          "start": "2022",
+          "end": "2024",
+          "bullets": [
+            "Completed 2 years, ladderized program online."
+          ],
+          "attachments": []
+        },
+        {
+          "role": "Social Work",
+          "org": "Brigham Young University",
+          "location": "Hawaii, USA",
+          "start": "2017",
+          "end": "2020",
+          "bullets": [
+            "Completed 3 years"
+          ],
+          "attachments": []
         }
       ]
     }
